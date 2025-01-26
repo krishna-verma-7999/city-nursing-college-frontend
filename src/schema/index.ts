@@ -163,7 +163,6 @@ export const resetPasswordSchema = yup
     totalFees: yup.number().required('Total fees is required'),
     discount: yup.number().required('Discount is required'),
     session: yup.number().required('Session is required'),
-    studentId: yup.string().required('Student ID is required'),
 
   })
   .required();
