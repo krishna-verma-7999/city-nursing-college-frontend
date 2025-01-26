@@ -1,4 +1,4 @@
-import { Caste } from "@/store/api";
+import { Caste, PaymentMode } from "@/store/api";
 
 export interface ISuccessMessage {
   data?: unknown;
@@ -91,4 +91,19 @@ export type StudentData = {
   isDeleted: boolean; // Deletion flag
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
+};
+
+export type StudentFeeData = {
+  student: string;
+  semester: string;
+  totalFees: number;
+  totalDiscount: number;
+  balanceFees: number;
+  paidAmount: number;
+  modeOfPayment: PaymentMode;
+  payDate: string;
+  transactionId: string;
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
 };

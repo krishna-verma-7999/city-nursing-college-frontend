@@ -66,7 +66,7 @@ const Page = () => {
             const semesterValue = index + 1;
             return {
               value: String(semesterValue),
-              label: `${semesterValue} Semester${semesterValue > 1 ? "s" : ""}`,
+              label: `${semesterValue}`,
               disabled: existingSemesters.some(
                 (semester: { semesterNumber: number }) =>
                   semester.semesterNumber === +semesterValue

@@ -13,6 +13,7 @@ type Props = {
   subLabel?: string;
   min?: number;
   max?: number;
+
 };
 
 const Input = ({
@@ -26,7 +27,9 @@ const Input = ({
   disabled = false,
   allowNumbers = false,
   min = 0,
+  
 }: Props) => {
+
   const allowNumbersOnly = (e: React.FormEvent<HTMLInputElement>) => {
     const target = e.currentTarget;
 

@@ -59,7 +59,7 @@ const Page = () => {
         <div>
           <Input
             type="text"
-            placeholder="admin"
+            placeholder="Username"
             register={register("userName")}
             error={!!errors.userName}
             message={errors.userName?.message}
@@ -69,7 +69,7 @@ const Page = () => {
         <div>
           <Input
             type="password"
-            placeholder="password"
+            placeholder="Password"
             register={register("password")}
             error={!!errors.password}
             message={errors.password?.message}
