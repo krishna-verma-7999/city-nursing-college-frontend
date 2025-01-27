@@ -6,7 +6,7 @@ import LoadingPage from "../shared/loadingPage";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const token = localStorage.getItem("authToken");
+  const token = window.localStorage.getItem("authToken");
 
   useEffect(() => {
     if (!token) router.push("/login");

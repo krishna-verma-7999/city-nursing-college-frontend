@@ -4,15 +4,16 @@ import {
   CourseData,
   StudentData,
   PaginatedApiResponse,
+  StudentFeeData,
   Semester,
   EditSemester,
 } from "@/types";
 import {
-  BaseQueryFn,
+  // BaseQueryFn,
   createApi,
-  FetchArgs,
+  // FetchArgs,
   fetchBaseQuery,
-  FetchBaseQueryError,
+  // FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 // import { redirect, useRouter } from "next/navigation";
 
@@ -40,7 +41,14 @@ type CreateFeesStructure = {
     }[];
   }[];
 };
-
+type CreateStudentFeePayload = {
+  student: string;
+  semester: string;
+  paidAmount: number;
+  modeOfPayment: PaymentMode;
+  payDate: string;
+  transactionId?: string;
+};
 type ResetPassword = {
   password: string;
   confirmPassword: string;
@@ -51,6 +59,11 @@ export enum Caste {
   General = "general",
 }
 
+export enum PaymentMode {
+  CASH = "CASH",
+  CHEQUE = "CHEQUE",
+  ONLINE_TRANSFER = "ONLINE_TRANSFER",
+}
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
   prepareHeaders: (headers) => {
@@ -86,7 +99,7 @@ const baseQuery = fetchBaseQuery({
 export const api = createApi({
   baseQuery,
   reducerPath: "api",
-  tagTypes: ["course", "fees", "students"],
+  tagTypes: ["course", "fees", "students", "student-fees"],
   endpoints: (build) => ({
     login: build.mutation<{ data: { accessToken: string } }, Login>({
       query: (user) => ({
@@ -120,7 +133,7 @@ export const api = createApi({
     }),
     getCourses: build.query<
       ApiResponse<CourseData[]>,
-      { status?: "COMPLETED" | "PENDING" }
+      { status?: "COMPLETED" | "PENDING" | "" }
     >({
       query: ({ status = "" }) => {
         return {
@@ -192,6 +205,30 @@ export const api = createApi({
       }),
       invalidatesTags: ["students"],
     }),
+    getLatestStudentFee: build.query<
+      ApiResponse<StudentFeeData>,
+      { student: string; semester: string }
+    >({
+      query: ({ student, semester }) => ({
+        url: `/fees/latest`,
+        method: "GET",
+        params: {
+          semester,
+          student,
+        },
+      }),
+    }),
+    createStudentFee: build.mutation<
+      ApiResponse<StudentFeeData>,
+      CreateStudentFeePayload
+    >({
+      query: (fees) => ({
+        url: `/fees`,
+        method: "POST",
+        body: fees,
+      }),
+      invalidatesTags: ["student-fees"],
+    }),
     deleteSemester: build.mutation<ApiResponse<void>, string>({
       query: (id) => ({
         url: `/semester/${id}`,
@@ -232,6 +269,9 @@ export const {
   useDeleteStudentMutation,
   useEditStudentMutation,
   useLazyGetStudentByIdQuery,
+  useGetStudentByIdQuery,
+  useLazyGetLatestStudentFeeQuery,
+  useCreateStudentFeeMutation,
   useDeleteSemesterMutation,
   useLazyGetFeesByIdQuery,
   useEditFeesMutation,
