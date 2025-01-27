@@ -15,7 +15,7 @@ type Fee = {
   type: string; // Type of fee
 };
 
-type Semester = {
+export type Semester = {
   course: string; // Course ID
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
@@ -25,10 +25,11 @@ type Semester = {
   _id: string; // Semester ID
 };
 
-export type ErrorMessage = {
-  data: {
-    message: string;
-  };
+export type EditSemester = {
+  course: string; // Course ID
+  fees: Fee[]; // Array of fee objects
+  semesterNumber: number; // Semester number
+  _id: string; // Semester ID
 };
 
 export type CourseData = {

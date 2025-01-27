@@ -5,6 +5,8 @@ import {
   StudentData,
   PaginatedApiResponse,
   StudentFeeData,
+  Semester,
+  EditSemester,
 } from "@/types";
 import {
   // BaseQueryFn,
@@ -46,7 +48,7 @@ type CreateStudentFeePayload = {
   modeOfPayment: PaymentMode;
   payDate: string;
   transactionId?: string;
-}
+};
 type ResetPassword = {
   password: string;
   confirmPassword: string;
@@ -97,7 +99,7 @@ const baseQuery = fetchBaseQuery({
 export const api = createApi({
   baseQuery,
   reducerPath: "api",
-  tagTypes: ["course", "fees", "students", "student-fees" ],
+  tagTypes: ["course", "fees", "students", "student-fees"],
   endpoints: (build) => ({
     login: build.mutation<{ data: { accessToken: string } }, Login>({
       query: (user) => ({
@@ -203,23 +205,51 @@ export const api = createApi({
       }),
       invalidatesTags: ["students"],
     }),
-    getLatestStudentFee: build.query<ApiResponse<StudentFeeData>, {student: string, semester: string}>({
-      query: ({student, semester}) => ({
+    getLatestStudentFee: build.query<
+      ApiResponse<StudentFeeData>,
+      { student: string; semester: string }
+    >({
+      query: ({ student, semester }) => ({
         url: `/fees/latest`,
         method: "GET",
         params: {
           semester,
-          student
-        }
+          student,
+        },
       }),
     }),
-    createStudentFee: build.mutation<ApiResponse<StudentFeeData>, CreateStudentFeePayload>({
+    createStudentFee: build.mutation<
+      ApiResponse<StudentFeeData>,
+      CreateStudentFeePayload
+    >({
       query: (fees) => ({
         url: `/fees`,
         method: "POST",
         body: fees,
       }),
       invalidatesTags: ["student-fees"],
+    }),
+    deleteSemester: build.mutation<ApiResponse<void>, string>({
+      query: (id) => ({
+        url: `/semester/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["students", "course"],
+    }),
+    getFeesById: build.query<ApiResponse<Semester>, string>({
+      query: (id) => ({
+        url: `/semester/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["fees"],
+    }),
+    editFees: build.mutation<ApiResponse<Semester>, EditSemester>({
+      query: (semester) => ({
+        url: `/semester/${semester._id}`,
+        method: "PUT",
+        body: semester,
+      }),
+      invalidatesTags: ["fees", "course", "students"],
     }),
   }),
 });
@@ -241,5 +271,8 @@ export const {
   useLazyGetStudentByIdQuery,
   useGetStudentByIdQuery,
   useLazyGetLatestStudentFeeQuery,
-  useCreateStudentFeeMutation
+  useCreateStudentFeeMutation,
+  useDeleteSemesterMutation,
+  useLazyGetFeesByIdQuery,
+  useEditFeesMutation,
 } = api;

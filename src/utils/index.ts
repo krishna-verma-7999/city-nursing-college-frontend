@@ -12,9 +12,9 @@ export const formatCurrency = (amount: number) => {
 export const calculateTotalFees = (courseData: CourseData) => {
   const totalFees: { general: number; sc: number } = { general: 0, sc: 0 };
 
-  courseData.semesters.forEach((semester) => {
-    semester.fees.forEach((fee) => {
-      fee.details.forEach((detail) => {
+  courseData.semesters?.forEach((semester) => {
+    semester.fees?.forEach((fee) => {
+      fee.details?.forEach((detail) => {
         if (detail.caste === "general") {
           totalFees.general += detail.amount;
         } else if (detail.caste === "sc") {
