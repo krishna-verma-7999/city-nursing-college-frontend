@@ -9,6 +9,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // Access localStorage safely
     const token = window.localStorage.getItem("authToken");
 
     if (!token) {
@@ -17,7 +18,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     } else {
       setIsAuthenticated(true);
     }
-  }, [router, window.localStorage.getItem("authToken")]);
+  }, [router]);
 
   // Show loading state while determining authentication status
   if (isAuthenticated === null) return <LoadingPage />;

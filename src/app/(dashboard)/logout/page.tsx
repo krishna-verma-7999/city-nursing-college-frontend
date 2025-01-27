@@ -9,6 +9,7 @@ const Logout = () => {
   dispatch(setIsSidebarCollapsed(true));
   dispatch(logout());
   redirect("/login");
+  return null;
 };
 
 export default Logout;

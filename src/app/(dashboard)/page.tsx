@@ -1,6 +1,6 @@
 "use client";
 import Card from "@/components/shared/card";
-import PieChartComponent from "@/components/shared/pie-chart";
+// import PieChartComponent from "@/components/shared/pie-chart";
 import { useDashboardQuery } from "@/store/api";
 import { Dashboard } from "@/types";
 import { GraduationCap, IndianRupee } from "lucide-react";
