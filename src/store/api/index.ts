@@ -131,7 +131,7 @@ export const api = createApi({
     }),
     getCourses: build.query<
       ApiResponse<CourseData[]>,
-      { status?: "COMPLETED" | "PENDING" }
+      { status?: "COMPLETED" | "PENDING" | "" }
     >({
       query: ({ status = "" }) => {
         return {

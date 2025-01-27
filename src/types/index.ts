@@ -25,6 +25,12 @@ type Semester = {
   _id: string; // Semester ID
 };
 
+export type ErrorMessage = {
+  data: {
+    message: string;
+  };
+};
+
 export type CourseData = {
   _id: string;
   createdAt: string; // ISO date string

@@ -13,7 +13,7 @@ type Props = {
   subLabel?: string;
   min?: number;
   max?: number;
-
+  className?: string;
 };
 
 const Input = ({
@@ -27,9 +27,8 @@ const Input = ({
   disabled = false,
   allowNumbers = false,
   min = 0,
-  
+  className = "",
 }: Props) => {
-
   const allowNumbersOnly = (e: React.FormEvent<HTMLInputElement>) => {
     const target = e.currentTarget;
 
@@ -50,7 +49,7 @@ const Input = ({
         type={type}
         autoComplete="off"
         placeholder={placeholder}
-        className={`${inputStyles} ${label && "mt-1 shadow-none placeholder:text-[10px]"}`}
+        className={`${inputStyles} ${label && "mt-1 shadow-none placeholder:text-[10px]"} ${className}`}
         {...register}
         disabled={disabled}
         onInput={allowNumbersOnly}

@@ -51,7 +51,7 @@ const Page = () => {
     <div className="shadow-lg px-10 py-24 w-full max-w-screen-sm">
       <div>
         <h1 className="text-xl font-bold font-sans">
-          Welcome To City Nursery College
+          Welcome To City Nursing College
         </h1>
         <h2 className="text-gray-400">Sign in to continue.</h2>
       </div>
