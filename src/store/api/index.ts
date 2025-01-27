@@ -4,6 +4,8 @@ import {
   CourseData,
   StudentData,
   PaginatedApiResponse,
+  Semester,
+  EditSemester,
 } from "@/types";
 import {
   BaseQueryFn,
@@ -190,6 +192,28 @@ export const api = createApi({
       }),
       invalidatesTags: ["students"],
     }),
+    deleteSemester: build.mutation<ApiResponse<void>, string>({
+      query: (id) => ({
+        url: `/semester/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["students", "course"],
+    }),
+    getFeesById: build.query<ApiResponse<Semester>, string>({
+      query: (id) => ({
+        url: `/semester/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["fees"],
+    }),
+    editFees: build.mutation<ApiResponse<Semester>, EditSemester>({
+      query: (semester) => ({
+        url: `/semester/${semester._id}`,
+        method: "PUT",
+        body: semester,
+      }),
+      invalidatesTags: ["fees", "course", "students"],
+    }),
   }),
 });
 
@@ -208,4 +232,7 @@ export const {
   useDeleteStudentMutation,
   useEditStudentMutation,
   useLazyGetStudentByIdQuery,
+  useDeleteSemesterMutation,
+  useLazyGetFeesByIdQuery,
+  useEditFeesMutation,
 } = api;

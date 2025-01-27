@@ -1,5 +1,5 @@
 "use client";
-import CreateCourse from "@/components/shared/create-course";
+import CreateFees from "@/components/shared/create-fees";
 import { Button } from "@mui/material";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ const Page = () => {
       >
         <ChevronLeft className="h-5 w-5" /> Back
       </Button>
-      <CreateCourse />;
+      <CreateFees />
     </div>
   );
 };
