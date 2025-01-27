@@ -7,6 +7,7 @@ import {
   StudentFeeData,
   Semester,
   EditSemester,
+  Dashboard,
 } from "@/types";
 import {
   // BaseQueryFn,
@@ -251,6 +252,13 @@ export const api = createApi({
       }),
       invalidatesTags: ["fees", "course", "students"],
     }),
+    dashboard: build.query<ApiResponse<Dashboard>, void>({
+      query: () => ({
+        url: `/dashboard/cards`,
+        method: "GET",
+      }),
+      providesTags: ["fees", "course", "student-fees", "students"],
+    }),
   }),
 });
 
@@ -275,4 +283,5 @@ export const {
   useDeleteSemesterMutation,
   useLazyGetFeesByIdQuery,
   useEditFeesMutation,
+  useDashboardQuery,
 } = api;

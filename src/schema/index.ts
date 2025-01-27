@@ -136,39 +136,42 @@ export const resetPasswordSchema = yup
   })
   .required();
 
-  export const studentFeesSchema = yup
+export const studentFeesSchema = yup
   .object({
     course: yup.string().required("Course is required"),
     semester: yup.string().required("Semester is required"),
-  paidAmount: yup
-    .number()
-    .required('Fees Paid is required')
-    .typeError('Fees Paid must be a number'),
-    payDate: yup.date().required('Paid on Date is required').typeError('Invalid date'),
+    paidAmount: yup
+      .number()
+      .required("Fees Paid is required")
+      .typeError("Fees Paid must be a number"),
+    payDate: yup
+      .date()
+      .required("Paid on Date is required")
+      .typeError("Invalid date"),
 
     modeOfPayment: yup
-    .string()
-    .required('Mode of payment is required')
-    .oneOf(Object.values(PaymentMode))
-    .typeError(`Mode of payment must be a with in ${Object.values(PaymentMode).join(', ')})}`),
+      .string()
+      .required("Mode of payment is required")
+      .oneOf(Object.values(PaymentMode))
+      .typeError(
+        `Mode of payment must be a with in ${Object.values(PaymentMode).join(", ")})}`
+      ),
 
-    transactionId: yup
-    .string()
-    .when("modeOfPayment", {
+    transactionId: yup.string().when("modeOfPayment", {
       is: PaymentMode.ONLINE_TRANSFER, // Condition: Only validate when modeOfPayment is "online"
-      then: (schema) => schema.required("Transaction ID is required for online payments"),
+      then: (schema) =>
+        schema.required("Transaction ID is required for online payments"),
       otherwise: (schema) => schema.notRequired(), // Not required for other modes
     }),
-    balanceFees: yup.number().required('Balance Fees is required'),
-    totalFees: yup.number().required('Total fees is required'),
-    discount: yup.number().required('Discount is required'),
-    session: yup.number().required('Session is required'),
-
+    balanceFees: yup.number().required("Balance Fees is required"),
+    totalFees: yup.number().required("Total fees is required"),
+    discount: yup.number().required("Discount is required"),
+    session: yup.number().required("Session is required"),
   })
   .required();
 
-  export const studentFeesSearchSchema = yup
+export const studentFeesSearchSchema = yup
   .object({
-    registerationNumber: yup.string().required('Register Number is required'),
-})
-.required();
+    registerationNumber: yup.string().required("Register Number is required"),
+  })
+  .required();

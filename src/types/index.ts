@@ -114,3 +114,14 @@ export type StudentFeeData = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type Dashboard = {
+  coursesCount: number;
+  studentsCount: number;
+  categoryWiseStudentsCount: {
+    sc: number;
+    general: number;
+  };
+  currentMonthFees: number;
+  currentMonthBalanceFees: number;
+};

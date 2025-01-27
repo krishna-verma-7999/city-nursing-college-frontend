@@ -105,57 +105,52 @@ const CreateStudent = () => {
 
   const submitHandler = handleSubmit(
     async (values: InferType<typeof studentSchema>) => {
-      try {
-        if (id) {
-          const student = await editStudent({
-            _id: studentId,
-            name: values.studentName,
-            aadharNo: values.aadharNumber,
-            address: values.address,
-            category: values.category,
-            contactNo: values.contact,
-            course: values.courseId,
-            dob: new Date(values.dob),
-            fatherName: values.fatherName,
-            motherName: values.motherName,
-            registrationNumber: values.registrationNumber,
-            session: +values.session,
-            registrationDate: new Date(values.registrationDate),
-            feesDiscount: +values.discount,
-          });
-          if (student?.data?.success) {
-            toast.success("Student is edited successfully");
-          } else if (student.error) {
-            toast.error("Student with this registration ID already exists");
-          }
-        } else {
-          const res = await createStudent({
-            name: values.studentName,
-            aadharNo: values.aadharNumber,
-            address: values.address,
-            category: values.category,
-            contactNo: values.contact,
-            course: values.courseId,
-            dob: new Date(values.dob),
-            fatherName: values.fatherName,
-            motherName: values.motherName,
-            registrationNumber: values.registrationNumber,
-            session: +values.session,
-            registrationDate: new Date(values.registrationDate),
-            feesDiscount: +values.discount,
-          });
-
-          if (res?.data?.success) {
-            toast.success("Student is created successfully");
-            reset();
-            redirect("/reports/student");
-          } else if (res.error) {
-            toast.error("Student with this registration ID already exists");
-          }
+      if (id) {
+        const student = await editStudent({
+          _id: studentId,
+          name: values.studentName,
+          aadharNo: values.aadharNumber,
+          address: values.address,
+          category: values.category,
+          contactNo: values.contact,
+          course: values.courseId,
+          dob: new Date(values.dob),
+          fatherName: values.fatherName,
+          motherName: values.motherName,
+          registrationNumber: values.registrationNumber,
+          session: +values.session,
+          registrationDate: new Date(values.registrationDate),
+          feesDiscount: +values.discount,
+        });
+        if (student?.data?.success) {
+          toast.success("Student is edited successfully");
+        } else if (student.error) {
+          toast.error("Student with this registration ID already exists");
         }
-      } catch (error) {
-        console.log("Error in creating course", error);
-        toast.error("Error in creating course");
+      } else {
+        const res = await createStudent({
+          name: values.studentName,
+          aadharNo: values.aadharNumber,
+          address: values.address,
+          category: values.category,
+          contactNo: values.contact,
+          course: values.courseId,
+          dob: new Date(values.dob),
+          fatherName: values.fatherName,
+          motherName: values.motherName,
+          registrationNumber: values.registrationNumber,
+          session: +values.session,
+          registrationDate: new Date(values.registrationDate),
+          feesDiscount: +values.discount,
+        });
+
+        if (res?.data?.success) {
+          toast.success("Student is created successfully");
+          reset();
+          redirect("/reports/student");
+        } else if (res.error) {
+          toast.error("Student with this registration ID already exists");
+        }
       }
     }
   );

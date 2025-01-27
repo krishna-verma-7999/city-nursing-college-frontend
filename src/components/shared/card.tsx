@@ -4,7 +4,7 @@ import React from "react";
 type Props = {
   title: string;
   count: number;
-  gradient: boolean;
+  gradient?: boolean;
   icon?: LucideIcon;
 };
 

@@ -57,3 +57,9 @@ export const CASTE = [
     label: "General",
   },
 ];
+
+export const MODE = {
+  CASH: "Cash",
+  CHEQUE: "Cheque",
+  ONLINE_TRANSFER: "Online Transfer",
+};

@@ -19,6 +19,8 @@ import {
 } from "@/store/api";
 import { StudentData } from "@/types";
 import DatePicker from "@/components/shared/date-picker";
+import { calculateSemesterFees } from "@/utils";
+import { MODE } from "@/constants";
 
 type SemesterType = { value: string; label: number }[];
 
@@ -26,7 +28,7 @@ const Page = () => {
   const [student, setStudent] = useState<StudentData | null>(null);
   const [semesters, setSemesters] = useState<SemesterType>([]);
 
-  const [searchStudent, { isLoading: isSearching }] =
+  const [searchStudent, { data: SearchedStudent }] =
     useLazyGetStudentByIdQuery();
   const [latestStudentFee, { isLoading: isFetchingLatestFee }] =
     useLazyGetLatestStudentFeeQuery();
@@ -125,22 +127,28 @@ const Page = () => {
     setValue("semester", selectedSemester);
 
     if (student) {
-      try {
-        const response = await latestStudentFee({
-          semester: selectedSemester,
-          student: student._id,
-        }).unwrap();
-        if (response.success && response.data) {
-          toast.success("Latest Fee found!");
-          setValue("balanceFees", response.data.balanceFees);
-          setValue("discount", response.data.totalDiscount);
-          setValue("totalFees", response.data.totalFees);
-        } else {
-          throw new Error("Latest Fee not found");
-        }
-      } catch {
-        toast.error("Error while fetching latest fee details");
+      const response = await latestStudentFee({
+        semester: selectedSemester,
+        student: student._id,
+      });
+      if (response.data && response.data.success && response.data.data) {
+        setValue("balanceFees", response.data.data.balanceFees);
+        setValue("discount", response.data.data.totalDiscount);
+        setValue("totalFees", response.data.data.totalFees);
+        toast.success("Latest Fee found!");
+      } else if (SearchedStudent && SearchedStudent.data) {
+        const discount =
+          SearchedStudent.data.feesDiscount /
+          SearchedStudent.data.course.duration;
+        const fees: Record<string, number> = calculateSemesterFees(
+          SearchedStudent.data.course,
+          selectedSemester
+        );
+        setValue("discount", discount);
+        setValue("totalFees", fees[SearchedStudent.data.category] - discount);
       }
+      if (response.error)
+        toast.error("Error while fetching latest fee details");
     }
   };
 
@@ -172,7 +180,6 @@ const Page = () => {
                     loadingTitle="searching..."
                     type="submit"
                     className="w-fit !mt-0"
-                    isLoading={isSearching}
                   />
 
                   <Button
@@ -288,6 +295,7 @@ const Page = () => {
                 label="Pay Amount"
                 register={register("paidAmount")}
                 disabled={!student}
+                allowNumbers
                 placeholder="Pay fees"
                 error={!!errors.paidAmount}
                 message={errors.paidAmount?.message}
@@ -306,7 +314,7 @@ const Page = () => {
                 >
                   {Object.values(PaymentMode).map((mode) => (
                     <MenuItem key={mode} value={mode}>
-                      {mode}
+                      {MODE[mode]}
                     </MenuItem>
                   ))}
                 </Select>
