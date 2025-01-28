@@ -19,6 +19,7 @@ import Datepicker from "./date-picker";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { CASTE } from "@/constants";
 import { calculateTotalFees, formatCurrency } from "@/utils";
+import { ErrorMessage } from "@/types";
 
 const CreateStudent = () => {
   const router = useParams();
@@ -125,7 +126,8 @@ const CreateStudent = () => {
         if (student?.data?.success) {
           toast.success("Student is edited successfully");
         } else if (student.error) {
-          toast.error("Student with this registration ID already exists");
+          const error = student.error as ErrorMessage;
+          toast.error(error.data.message);
         }
       } else {
         const res = await createStudent({
@@ -149,7 +151,8 @@ const CreateStudent = () => {
           reset();
           redirect("/reports/student");
         } else if (res.error) {
-          toast.error("Student with this registration ID already exists");
+          const error = res.error as ErrorMessage;
+          toast.error(error.data.message);
         }
       }
     }

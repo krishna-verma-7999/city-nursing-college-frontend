@@ -10,13 +10,12 @@ import {
   Dashboard,
 } from "@/types";
 import {
-  // BaseQueryFn,
+  BaseQueryFn,
   createApi,
-  // FetchArgs,
+  FetchArgs,
   fetchBaseQuery,
-  // FetchBaseQueryError,
+  FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
-// import { redirect, useRouter } from "next/navigation";
 
 export type Login = {
   userName: string;
@@ -76,29 +75,27 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// const baseQueryWithAuth: BaseQueryFn<
-//   string | FetchArgs,
-//   unknown,
-//   FetchBaseQueryError
-// > = async (args, api, extraOptions) => {
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   const result: any = await baseQuery(args, api, extraOptions);
-//   console.log("result", result);
-//   if (
-//     result.error &&
-//     result.error.status === 500 &&
-//     result.error.data?.message === "jwt expired"
-//   ) {
-//     const router = useRouter();
-//     redirect("/logout");
-//     return;
-//   }
+const baseQueryWithAuth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = await baseQuery(args, api, extraOptions);
+  if (
+    result.error &&
+    result.error.status === 500 &&
+    result.error.data?.message === "jwt expired"
+  ) {
+    window.location.href = "/logout";
+    return;
+  }
 
-//   return result;
-// };
+  return result;
+};
 
 export const api = createApi({
-  baseQuery,
+  baseQuery: baseQueryWithAuth,
   reducerPath: "api",
   tagTypes: ["course", "fees", "students", "student-fees"],
   endpoints: (build) => ({
@@ -259,6 +256,21 @@ export const api = createApi({
       }),
       providesTags: ["fees", "course", "student-fees", "students"],
     }),
+    dashboardGraph: build.query<
+      ApiResponse<{
+        data: {
+          studentCount: number;
+          name: string;
+        }[];
+      }>,
+      void
+    >({
+      query: () => ({
+        url: `/dashboard/graph`,
+        method: "GET",
+      }),
+      providesTags: ["fees", "course", "student-fees", "students"],
+    }),
   }),
 });
 
@@ -284,4 +296,5 @@ export const {
   useLazyGetFeesByIdQuery,
   useEditFeesMutation,
   useDashboardQuery,
+  useDashboardGraphQuery,
 } = api;

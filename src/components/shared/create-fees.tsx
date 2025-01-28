@@ -17,7 +17,7 @@ import {
 } from "@/store/api";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
-import { Semester } from "@/types";
+import { ErrorMessage, Semester } from "@/types";
 
 type SemesterType = {
   value: string;
@@ -209,7 +209,6 @@ const CreateFees = () => {
           semesterNumber: +values.semester,
           fees: transformedFees,
         });
-        console.log("res", res);
         if (res.data?.success) {
           toast.success("Fees Structure updated successfully");
           reset({ feesType: [], courseId: "", semester: "" });
@@ -217,7 +216,8 @@ const CreateFees = () => {
           router.push("/reports/coursewise");
         }
         if (res.error) {
-          toast.error("Something went wrong!");
+          const error = res.error as ErrorMessage;
+          toast.error(error.data.message);
         }
       } else {
         const res = await createFees({
@@ -232,7 +232,8 @@ const CreateFees = () => {
           setFormattedTotal({ scFees: "", generalFees: "" });
         }
         if (res.error) {
-          toast.error("Something went wrong!");
+          const error = res.error as ErrorMessage;
+          toast.error(error.data.message);
         }
       }
     }

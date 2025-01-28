@@ -33,11 +33,9 @@ const columns: GridColDef[] = [
     width: 150,
     renderCell: (params) => {
       const category = params.row.category as string;
-      console.log("params.row", params.row);
       const fees: Record<string, number> = calculateTotalFees(
         params.row.course
       );
-      console.log("Fees", fees, category);
       const totalFees = fees[category];
       return formatCurrency(totalFees);
     },

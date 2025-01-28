@@ -15,7 +15,9 @@ const Card = ({ title, count, gradient = false, icon: Icon }: Props) => {
     >
       <h1 className="text-xl">{title}</h1>
       <p className="text-5xl font-thin">{count}</p>
-      {Icon && <Icon className="absolute top-8 right-3 h-14 w-14 opacity-70" />}
+      {Icon && (
+        <Icon className="absolute top-12 right-3 h-14 w-14 opacity-40" />
+      )}
     </div>
   );
 };

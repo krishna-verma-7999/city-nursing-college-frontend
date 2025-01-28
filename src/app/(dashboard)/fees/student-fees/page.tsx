@@ -346,14 +346,14 @@ const Page = () => {
               title="Submit"
               loadingTitle="Submitting..."
               type="submit"
-              className="w-fit"
+              className="!w-fit"
               isLoading={isFetchingLatestFee || isCreatingFee}
               isDisable={!student || !semester}
             />
             <Button
               title="Cancel"
               type="button"
-              className="w-fit bg-[#cccccc]"
+              className="!w-fit bg-[#cccccc]"
               onClick={() => feeReset()}
             />
           </div>

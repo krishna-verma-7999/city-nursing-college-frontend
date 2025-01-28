@@ -1,4 +1,5 @@
 import { useDeleteCoursesMutation } from "@/store/api";
+import { ErrorMessage } from "@/types";
 import { Box, Button, Modal } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import React, { useState } from "react";
@@ -12,8 +13,10 @@ const DeleteCourse = ({ id }: { id: string }) => {
     if (res.data?.success) {
       toast.success("Course deleted successfully");
     }
+
     if (res.error) {
-      toast.error("Error in deleting course");
+      const error = res.error as ErrorMessage;
+      toast.error(error.data.message);
     }
     setOpen(false);
   };

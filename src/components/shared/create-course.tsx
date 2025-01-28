@@ -7,6 +7,7 @@ import {
   useEditCourseMutation,
   useLazyGetCourseByIdQuery,
 } from "@/store/api";
+import { ErrorMessage } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
@@ -55,39 +56,37 @@ const CreateCourse = () => {
   const submitHandler = handleSubmit(
     async (values: InferType<typeof courseSchema>) => {
       if (id) {
-        try {
-          const course = await editCourse({
-            _id: id as string,
-            name: values.course,
-            duration: values.duration,
-            description: values.description,
-          });
-          if (course?.data?.success) {
-            toast.success("Course is edited successfully");
-            router.push("/reports/coursewise");
-          } else if (course.error) {
-            toast.error("Course with this name already exists");
-          }
-        } catch (error) {
-          console.log("Error in creating course", error);
-          toast.error("Something went wrong");
+        const course = await editCourse({
+          _id: id as string,
+          name: values.course,
+          duration: values.duration,
+          description: values.description,
+        });
+        if (course?.data?.success) {
+          toast.success("Course is edited successfully");
+          router.push("/reports/coursewise");
+        } else if (course.error) {
+          toast.error("Course with this name already exists");
+        }
+        if (course.error) {
+          const error = course.error as ErrorMessage;
+          toast.error(error.data.message);
         }
       } else {
-        try {
-          const course = await createCourse({
-            name: values.course,
-            duration: values.duration,
-            description: values.description,
-          });
-          if (course?.data?.success) {
-            toast.success("Course is created successfully");
-            reset();
-          } else if (course.error) {
-            toast.error("Course with this name already exists");
-          }
-        } catch (error) {
-          console.log("Error in creating course", error);
-          toast.error("Error in creating course");
+        const course = await createCourse({
+          name: values.course,
+          duration: values.duration,
+          description: values.description,
+        });
+        if (course?.data?.success) {
+          toast.success("Course is created successfully");
+          reset();
+        } else if (course.error) {
+          toast.error("Course with this name already exists");
+        }
+        if (course.error) {
+          const error = course.error as ErrorMessage;
+          toast.error(error.data.message);
         }
       }
     }

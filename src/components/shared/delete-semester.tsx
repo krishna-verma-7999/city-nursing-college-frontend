@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 import LoadingPage from "./loadingPage";
+import { ErrorMessage } from "@/types";
 
 const DeleteSemester = ({ id }: { id: string }) => {
   const [deleteSemesters, { isLoading }] = useDeleteSemesterMutation();
@@ -16,7 +17,8 @@ const DeleteSemester = ({ id }: { id: string }) => {
       toast.success("Course deleted successfully");
     }
     if (res.error) {
-      toast.error("Error in deleting course");
+      const error = res.error as ErrorMessage;
+      toast.error(error.data.message);
     }
   };
   return (

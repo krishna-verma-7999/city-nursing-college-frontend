@@ -10,6 +10,12 @@ type FeeDetail = {
   amount: number;
 };
 
+export type ErrorMessage = {
+  data: {
+    message: string;
+  };
+};
+
 type Fee = {
   details: FeeDetail[]; // Array of fee details
   type: string; // Type of fee
@@ -125,3 +131,8 @@ export type Dashboard = {
   currentMonthFees: number;
   currentMonthBalanceFees: number;
 };
+
+export type GraphData = {
+  studentCount: number;
+  name: string;
+}[];
