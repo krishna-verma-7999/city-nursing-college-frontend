@@ -283,7 +283,7 @@ const CreateFees = () => {
                 disabled={semesters.length === 0}
               >
                 <InputLabel id="semester" className="text-[12px]">
-                  Semester
+                  Semester / Years
                 </InputLabel>
                 <Select
                   readOnly={readOnly}

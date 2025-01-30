@@ -113,7 +113,7 @@ export const studentSchema = yup.object({
     .required("Category is required")
     .oneOf([...Object.values(Caste)], "Invalid category"),
   fees: yup.string().required("Fees is required"),
-  session: yup.string().required("Session is required"),
+  session: yup.string().required("Enrollment year is required"),
 });
 
 export const resetPasswordSchema = yup
@@ -145,9 +145,17 @@ export const studentFeesSchema = yup
       .required("Fees Paid is required")
       .typeError("Fees Paid must be a number"),
     payDate: yup
-      .date()
-      .required("Paid on Date is required")
-      .typeError("Invalid date"),
+      .string() // Now treating it as a string for type="date" input
+      .required("Registration date is required")
+      .matches(
+        /^\d{4}-\d{2}-\d{2}$/, // Regex to validate the date format as YYYY-MM-DD
+        "Invalid date format"
+      )
+      .test("is-not-future", "Pay date cannot be in the future", (value) => {
+        if (!value) return true;
+        const date = new Date(value);
+        return date <= today; // Check if the date is not in the future
+      }),
 
     modeOfPayment: yup
       .string()
@@ -158,7 +166,8 @@ export const studentFeesSchema = yup
       ),
 
     transactionId: yup.string().when("modeOfPayment", {
-      is: PaymentMode.ONLINE_TRANSFER, // Condition: Only validate when modeOfPayment is "online"
+      is: (mode: string) =>
+        mode === PaymentMode.ONLINE_TRANSFER || mode === PaymentMode.CHEQUE, // Check for both modes
       then: (schema) =>
         schema.required("Transaction ID is required for online payments"),
       otherwise: (schema) => schema.notRequired(), // Not required for other modes
@@ -166,7 +175,7 @@ export const studentFeesSchema = yup
     balanceFees: yup.number().required("Balance Fees is required"),
     totalFees: yup.number().required("Total fees is required"),
     discount: yup.number().required("Discount is required"),
-    session: yup.number().required("Session is required"),
+    session: yup.number().required("Enrollment year is required"),
   })
   .required();
 

@@ -1,13 +1,2 @@
-- header with auth jwt expiration
-- debouncing on unique name
-- backend cors
-- backend multi delete students
-- handling only allow courses to delete if its no student is attach to that course
-- when logout there is an error.
-- dark mode
-- Error handling like cannot delete course with already enrolled student. registeration ID unique etc.
-- Delete semesters handling cause if its assign to student then won't allow
-- when semester delete then handler status .
 - export functions
-- populate course in semester get by id
-- when update fees then there is problem
+- register number is already exisgts

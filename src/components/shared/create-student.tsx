@@ -309,6 +309,7 @@ const CreateStudent = () => {
                   label="Aadhaar No."
                   type="text"
                   allowNumbers
+                  aadharValidation
                   placeholder="Aadhaar No."
                   register={register("aadharNumber")}
                   error={!!errors.aadharNumber}
@@ -330,13 +331,14 @@ const CreateStudent = () => {
                   placeholder="Contact Number"
                   register={register("contact")}
                   allowNumbers
+                  phoneNumberValidation
                   error={!!errors.contact}
                   message={errors.contact?.message}
                 />
               </div>
               <div>
                 <label className="text-[10px] text-gray-500 font-medium">
-                  Session
+                  Enrollment Year
                 </label>
                 <input
                   className="w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary focus:outline-none dark:text-white dark:focus:outline-none"

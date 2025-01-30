@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -59,7 +59,7 @@ const columns: GridColDef[] = [
     renderCell: (params) => new Date(params.value).toLocaleDateString(),
   },
   { field: "contactNo", headerName: "Phone Number", width: 150 },
-  { field: "session", headerName: "Session", width: 75 },
+  { field: "session", headerName: "Enrollment Year", width: 75 },
   {
     field: "",
     headerName: "Action",
@@ -86,15 +86,20 @@ const CustomToolbar = () => (
 );
 
 const Page = () => {
-  const { data: students, isLoading } = useGetStudentsQuery();
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 5,
+  });
+  const { data: students, isLoading } = useGetStudentsQuery({
+    page: paginationModel.page,
+    limit: paginationModel.pageSize,
+  });
+
+  const totalRowCount = students?.data.totalDocs;
   const studentsData = students?.data?.docs.map((row, index) => ({
     id: index + 1,
     ...row,
   }));
-  // const coursesData = courses?.data?.map((row, index) => ({
-  //   id: index + 1,
-  //   ...row,
-  // }));
 
   if (isLoading) {
     return (
@@ -105,7 +110,7 @@ const Page = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="py-5 px-2 max-w-7xl w-full mx-auto">
       <div className="h-[400px] w-full justify-center items-center flex">
         {studentsData && studentsData.length > 0 ? (
           <DataGrid
@@ -114,6 +119,11 @@ const Page = () => {
             rowSelection={false}
             getRowId={(row) => row.id}
             pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            pageSizeOptions={[5, 10, 25, 50]}
+            rowCount={totalRowCount}
             slots={{
               toolbar: CustomToolbar,
             }}

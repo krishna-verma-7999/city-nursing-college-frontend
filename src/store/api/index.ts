@@ -8,6 +8,7 @@ import {
   Semester,
   EditSemester,
   Dashboard,
+  PaginatedRequest,
 } from "@/types";
 import {
   BaseQueryFn,
@@ -179,11 +180,18 @@ export const api = createApi({
       }),
       invalidatesTags: ["students"],
     }),
-    getStudents: build.query<PaginatedApiResponse<StudentData[]>, void>({
-      query: () => {
+    getStudents: build.query<
+      PaginatedApiResponse<StudentData[]>,
+      PaginatedRequest
+    >({
+      query: ({ page = 1, limit = 25 }) => {
         return {
           url: `/student`,
           method: "GET",
+          params: {
+            page,
+            limit,
+          },
         };
       },
       providesTags: ["students"],
@@ -214,6 +222,12 @@ export const api = createApi({
           semester,
           student,
         },
+      }),
+    }),
+    getSemester: build.query<ApiResponse<Semester[]>, void>({
+      query: () => ({
+        url: `/semester`,
+        method: "GET",
       }),
     }),
     createStudentFee: build.mutation<
@@ -249,6 +263,7 @@ export const api = createApi({
       }),
       invalidatesTags: ["fees", "course", "students"],
     }),
+
     dashboard: build.query<ApiResponse<Dashboard>, void>({
       query: () => ({
         url: `/dashboard/cards`,
@@ -297,4 +312,5 @@ export const {
   useEditFeesMutation,
   useDashboardQuery,
   useDashboardGraphQuery,
+  useGetSemesterQuery,
 } = api;

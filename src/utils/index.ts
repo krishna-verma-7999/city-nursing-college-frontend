@@ -1,4 +1,4 @@
-import { CourseData } from "@/types";
+import { CourseData, Semester } from "@/types";
 
 export const formatCurrency = (amount: number) => {
   const formattedValue = new Intl.NumberFormat("en-IN", {
@@ -39,6 +39,25 @@ export const calculateSemesterFees = (
   const semester = courseData.semesters?.find(
     (sem) => sem._id === semesterNumber
   );
+
+  // Calculate fees only for the specific semester
+  semester?.fees?.forEach((fee) => {
+    fee.details?.forEach((detail) => {
+      if (detail.caste === "general") {
+        totalFees.general += detail.amount;
+      } else if (detail.caste === "sc") {
+        totalFees.sc += detail.amount;
+      }
+    });
+  });
+
+  return totalFees;
+};
+
+export const calculateSemFees = (
+  semester: Semester
+): Record<string, number> => {
+  const totalFees: { general: number; sc: number } = { general: 0, sc: 0 };
 
   // Calculate fees only for the specific semester
   semester?.fees?.forEach((fee) => {

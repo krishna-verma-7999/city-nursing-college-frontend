@@ -88,7 +88,7 @@ const Page = () => {
                       onClick={handleMenuClose}
                       className="flex !justify-between"
                     >
-                      <span>{index + 1} sem</span>
+                      <span>{sem.semesterNumber} sem</span>
                       <span className="flex gap-2">
                         <DeleteSemester id={sem._id} />
                         <FilePenLine
@@ -174,7 +174,7 @@ const Page = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="py-5 px-2 max-w-7xl w-full mx-auto">
       <div className="h-[400px] w-full justify-center items-center flex">
         {coursesData && coursesData.length > 0 ? (
           <DataGrid

@@ -112,9 +112,9 @@ const CreateCourse = () => {
             <div>
               <Input
                 label="Duration"
-                subLabel="In Semesters"
+                subLabel="In Semesters / years"
                 type="number"
-                placeholder="8 semesters"
+                placeholder="8 semesters / 2 years"
                 register={register("duration")}
                 error={!!errors.duration}
                 message={errors.duration?.message}

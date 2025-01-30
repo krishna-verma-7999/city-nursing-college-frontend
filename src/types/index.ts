@@ -136,3 +136,8 @@ export type GraphData = {
   studentCount: number;
   name: string;
 }[];
+
+export type PaginatedRequest = {
+  page?: number;
+  limit?: number;
+};

@@ -4,7 +4,7 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { InferType } from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
@@ -65,12 +65,17 @@ const Page = () => {
       discount: 0,
       modeOfPayment: PaymentMode.ONLINE_TRANSFER,
       paidAmount: 0,
-      payDate: new Date(),
+      payDate: "",
       session: new Date().getFullYear(),
       totalFees: 0,
       transactionId: "",
     },
   });
+
+  useEffect(() => {
+    const formattedData = new Date().toISOString().split("T")[0];
+    setValue("payDate", formattedData);
+  }, []);
 
   const semester = watch("semester");
   const modeOfPayment = watch("modeOfPayment");
@@ -80,7 +85,7 @@ const Page = () => {
     const response = await createStudentFee({
       student: student._id,
       ...data,
-      payDate: data.payDate.toISOString(),
+      payDate: data.payDate,
     });
 
     if (response?.data?.success) {
@@ -215,7 +220,7 @@ const Page = () => {
             <div>
               <Input
                 type="number"
-                label="Session/Year"
+                label="Enrollment Year"
                 register={register("session")}
                 disabled
                 placeholder="Auto Filled through Registration Form"
@@ -334,6 +339,19 @@ const Page = () => {
                   disabled={!student}
                   register={register("transactionId")}
                   placeholder="Transaction ID"
+                  error={!!errors.transactionId}
+                  message={errors.transactionId?.message}
+                />
+              </div>
+            )}
+            {modeOfPayment === PaymentMode.CHEQUE && (
+              <div>
+                <Input
+                  type="text"
+                  label="Cheque no."
+                  disabled={!student}
+                  register={register("transactionId")}
+                  placeholder="Cheque No."
                   error={!!errors.transactionId}
                   message={errors.transactionId?.message}
                 />
