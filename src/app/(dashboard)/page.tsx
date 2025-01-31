@@ -1,21 +1,21 @@
 "use client";
 import Card from "@/components/shared/card";
-import StudentCountChart from "@/components/shared/StudentCountChart";
-import PieChartComponent from "@/components/shared/pie-chart";
-import { useDashboardGraphQuery, useDashboardQuery } from "@/store/api";
-import { Dashboard, GraphData } from "@/types";
+// import StudentCountChart from "@/components/shared/StudentCountChart";
+// import PieChartComponent from "@/components/shared/pie-chart";
+import { useDashboardQuery } from "@/store/api";
+import { Dashboard } from "@/types";
 import { GraduationCap, IndianRupee, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [dashboardData, setDashboardData] = useState<Dashboard | null>(null);
-  const [graphData, setGraphData] = useState<GraphData | null>(null);
+  // const [graphData, setGraphData] = useState<GraphData | null>(null);
   const { data } = useDashboardQuery();
-  const { data: chartData } = useDashboardGraphQuery();
+  // const { data: chartData } = useDashboardGraphQuery();
 
-  useEffect(() => {
-    if (chartData && chartData.data) setGraphData(chartData?.data.data);
-  }, [chartData]);
+  // useEffect(() => {
+  //   if (chartData && chartData.data) setGraphData(chartData?.data.data);
+  // }, [chartData]);
 
   useEffect(() => {
     if (data?.data) setDashboardData(data.data);
