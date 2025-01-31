@@ -137,9 +137,12 @@ const Page = () => {
         student: student._id,
       });
       if (response.data && response.data.success && response.data.data) {
+        const totalValue =
+          response.data.data.totalFees + response.data.data.totalDiscount;
         setValue("balanceFees", response.data.data.balanceFees);
         setValue("discount", response.data.data.totalDiscount);
         setValue("totalFees", response.data.data.totalFees);
+        setValue("netFees", totalValue);
         toast.success("Latest Fee found!");
       } else if (SearchedStudent && SearchedStudent.data) {
         const discount =
@@ -268,6 +271,17 @@ const Page = () => {
               <Input
                 type="number"
                 label="Total Fees"
+                register={register("netFees")}
+                disabled
+                placeholder="Auto Filled through Registration Form"
+                error={!!errors.totalFees}
+                message={errors.totalFees?.message}
+              />
+            </div>
+            <div>
+              <Input
+                type="number"
+                label="Net Fees"
                 register={register("totalFees")}
                 disabled
                 placeholder="Auto Filled through Registration Form"

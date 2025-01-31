@@ -4,7 +4,7 @@ import StudentCountChart from "@/components/shared/StudentCountChart";
 import PieChartComponent from "@/components/shared/pie-chart";
 import { useDashboardGraphQuery, useDashboardQuery } from "@/store/api";
 import { Dashboard, GraphData } from "@/types";
-import { GraduationCap, IndianRupee } from "lucide-react";
+import { GraduationCap, IndianRupee, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -33,6 +33,17 @@ export default function Home() {
           count={dashboardData?.studentsCount || 0}
         />
         <Card
+          title="General students"
+          count={dashboardData?.categoryWiseStudentsCount.general || 0}
+          icon={User}
+        />
+        <Card
+          title="SC/BC students"
+          count={dashboardData?.categoryWiseStudentsCount.sc || 0}
+          icon={User}
+          gradient
+        />
+        <Card
           title="Monthly Fees Collection"
           gradient
           count={dashboardData?.currentMonthFees || 0}
@@ -45,7 +56,7 @@ export default function Home() {
           count={dashboardData?.currentMonthBalanceFees || 0}
         />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-10 justify-between ">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-10 justify-between ">
         {graphData && <StudentCountChart data={graphData} />}
         <PieChartComponent
           data={[
@@ -59,7 +70,7 @@ export default function Home() {
             },
           ]}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

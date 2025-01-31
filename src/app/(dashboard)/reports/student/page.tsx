@@ -5,13 +5,67 @@ import {
   GridColDef,
   GridToolbarContainer,
   GridToolbarFilterButton,
-  GridToolbarExport,
 } from "@mui/x-data-grid";
 import { useGetStudentsQuery } from "@/store/api";
-import { FilePenLine, Loader2 } from "lucide-react";
+import { Download, FilePenLine, Loader2 } from "lucide-react";
 import DeleteStudent from "@/components/shared/delete-student";
 import { redirect } from "next/navigation";
 import { calculateTotalFees, formatCurrency } from "@/utils";
+import { Button } from "@mui/material";
+import Papa from "papaparse";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CustomToolbar = ({ data }: { data: any[] }) => {
+  const handleExport = () => {
+    const exportData = data.map((row) => {
+      const fees = calculateTotalFees(row.course);
+      const totalFees = fees[row.category] || 0;
+
+      return {
+        ID: row.id,
+        "Registration Number": row.registrationNumber,
+        "Student Name": row.name,
+        "Father's Name": row.fatherName,
+        "Mother's Name": row.motherName,
+        Course: row.course?.name || "N/A",
+        Category: row.category,
+        Fees: totalFees,
+        Discount: row.feesDiscount,
+        "Net Fees": row.netFees,
+        DOB: new Date(row.dob).toLocaleDateString(),
+        "Phone Number": row.contactNo,
+        "Enrollment Year": row.session,
+      };
+    });
+
+    // Convert to CSV
+    const csv = Papa.unparse(exportData, {
+      header: true, // Include headers in the CSV
+    });
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "Students.csv";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  return (
+    <GridToolbarContainer className="toolbar flex gap-2">
+      <GridToolbarFilterButton />
+      <Button
+        variant="text"
+        onClick={handleExport}
+        className="flex gap-2 items-center"
+      >
+        <Download className="h-4 w-4" />
+        Export
+      </Button>
+    </GridToolbarContainer>
+  );
+};
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
@@ -78,13 +132,6 @@ const columns: GridColDef[] = [
   },
 ];
 
-const CustomToolbar = () => (
-  <GridToolbarContainer className="toolbar flex gap-2">
-    <GridToolbarFilterButton />
-    <GridToolbarExport />
-  </GridToolbarContainer>
-);
-
 const Page = () => {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -125,7 +172,7 @@ const Page = () => {
             pageSizeOptions={[5, 10, 25, 50]}
             rowCount={totalRowCount}
             slots={{
-              toolbar: CustomToolbar,
+              toolbar: () => <CustomToolbar data={studentsData} />,
             }}
           />
         ) : (

@@ -146,7 +146,7 @@ export const studentFeesSchema = yup
       .typeError("Fees Paid must be a number"),
     payDate: yup
       .string() // Now treating it as a string for type="date" input
-      .required("Registration date is required")
+      .required("Payment date is required")
       .matches(
         /^\d{4}-\d{2}-\d{2}$/, // Regex to validate the date format as YYYY-MM-DD
         "Invalid date format"
@@ -173,6 +173,7 @@ export const studentFeesSchema = yup
       otherwise: (schema) => schema.notRequired(), // Not required for other modes
     }),
     balanceFees: yup.number().required("Balance Fees is required"),
+    netFees: yup.number().required("Net fees is required"),
     totalFees: yup.number().required("Total fees is required"),
     discount: yup.number().required("Discount is required"),
     session: yup.number().required("Enrollment year is required"),

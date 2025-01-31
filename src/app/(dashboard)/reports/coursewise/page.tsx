@@ -5,22 +5,70 @@ import {
   GridColDef,
   GridToolbarContainer,
   GridToolbarFilterButton,
-  GridToolbarExport,
 } from "@mui/x-data-grid";
 import { useGetCoursesQuery } from "@/store/api";
 import { Button, Chip, Menu, MenuItem } from "@mui/material";
-import { FilePenLine, Loader2 } from "lucide-react";
+import { Download, FilePenLine, Loader2 } from "lucide-react";
 import DeleteCourse from "@/components/shared/delete-course";
 import { redirect } from "next/navigation";
 import DeleteSemester from "@/components/shared/delete-semester";
 import { Semester } from "@/types";
 import { calculateTotalFees, formatCurrency } from "@/utils";
-const CustomToolbar = () => (
-  <GridToolbarContainer className="toolbar flex gap-2">
-    <GridToolbarFilterButton />
-    <GridToolbarExport />
-  </GridToolbarContainer>
-);
+import Papa from "papaparse";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CustomToolbar = ({ data }: { data: any[] }) => {
+  const handleExport = () => {
+    const exportData = data.flatMap((row) => {
+      const fees = calculateTotalFees(row);
+
+      return row.semesters.length > 0
+        ? row.semesters.map((sem: Semester) => ({
+            id: row.id,
+            course: row.name,
+            semesterNumber: sem.semesterNumber,
+            generalFees: fees.general,
+            scFees: fees.sc,
+          }))
+        : [
+            {
+              id: row.id,
+              course: row.name,
+              semesterNumber: "N/A",
+              generalFees: fees.general,
+              scFees: fees.sc,
+            },
+          ];
+    });
+
+    // Convert to CSV
+    const csv = Papa.unparse(exportData, {
+      header: true, // Include headers in the CSV
+    });
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "Coursewise.csv";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  return (
+    <GridToolbarContainer className="toolbar flex gap-2">
+      <GridToolbarFilterButton />
+      <Button
+        variant="text"
+        onClick={handleExport}
+        className="flex gap-2 items-center"
+      >
+        <Download className="h-4 w-4" />
+        Export
+      </Button>
+    </GridToolbarContainer>
+  );
+};
 
 const Page = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -184,7 +232,7 @@ const Page = () => {
             getRowId={(row) => row.id}
             pagination
             slots={{
-              toolbar: CustomToolbar,
+              toolbar: () => <CustomToolbar data={coursesData} />,
             }}
           />
         ) : (

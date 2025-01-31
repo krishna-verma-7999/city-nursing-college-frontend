@@ -10,6 +10,7 @@ import { useGetSemesterQuery } from "@/store/api";
 import { Download, Loader2 } from "lucide-react";
 import { calculateSemFees, formatCurrency } from "@/utils";
 import Papa from "papaparse";
+import { Button } from "@mui/material";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
@@ -71,13 +72,14 @@ const CustomToolbar = ({ data }: { data: any[] }) => {
   return (
     <GridToolbarContainer className="toolbar flex gap-2">
       <GridToolbarFilterButton />
-      <button
+      <Button
+        variant="text"
         onClick={handleExport}
-        className="flex items-center gap-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="flex gap-2 items-center"
       >
         <Download className="h-4 w-4" />
         Export
-      </button>
+      </Button>
     </GridToolbarContainer>
   );
 };
@@ -107,7 +109,7 @@ const Page = () => {
             rows={semesterData}
             columns={columns}
             rowSelection={false}
-            getRowId={(row) => row.id} // Ensure this matches the ID in `semesterData`
+            getRowId={(row) => row.id}
             pagination
             pageSizeOptions={[5, 10, 25, 50]}
             slots={{
