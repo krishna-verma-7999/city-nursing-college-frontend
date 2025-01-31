@@ -178,7 +178,7 @@ export const api = createApi({
         method: "POST",
         body: student,
       }),
-      invalidatesTags: ["students"],
+      invalidatesTags: ["students", "fees", "student-fees"],
     }),
     getStudents: build.query<
       PaginatedApiResponse<StudentData[]>,
@@ -286,6 +286,16 @@ export const api = createApi({
       }),
       providesTags: ["fees", "course", "student-fees", "students"],
     }),
+    getBalanceFees: build.query<
+      ApiResponse<StudentFeeData[]>,
+      { haveBalanceFees?: boolean; student?: string }
+    >({
+      query: ({ haveBalanceFees = true, student = "" }) => ({
+        url: `/fees?haveBalanceFees=${haveBalanceFees}&student=${student}`,
+        method: "GET",
+      }),
+      providesTags: ["fees", "student-fees"],
+    }),
   }),
 });
 
@@ -313,4 +323,5 @@ export const {
   useDashboardQuery,
   useDashboardGraphQuery,
   useGetSemesterQuery,
+  useGetBalanceFeesQuery,
 } = api;

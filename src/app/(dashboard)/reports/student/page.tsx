@@ -20,6 +20,8 @@ const CustomToolbar = ({ data }: { data: any[] }) => {
     const exportData = data.map((row) => {
       const fees = calculateTotalFees(row.course);
       const totalFees = fees[row.category] || 0;
+      const discount = row.feesDiscount;
+      const netFees = totalFees - discount;
 
       return {
         ID: row.id,
@@ -31,7 +33,7 @@ const CustomToolbar = ({ data }: { data: any[] }) => {
         Category: row.category,
         Fees: totalFees,
         Discount: row.feesDiscount,
-        "Net Fees": row.netFees,
+        "Net Fees": netFees,
         DOB: new Date(row.dob).toLocaleDateString(),
         "Phone Number": row.contactNo,
         "Enrollment Year": row.session,
@@ -104,7 +106,16 @@ const columns: GridColDef[] = [
     field: "netFees",
     headerName: "Net Fees",
     width: 150,
-    renderCell: (params) => formatCurrency(params.value),
+    renderCell: (params) => {
+      const category = params.row.category as string;
+      const fees: Record<string, number> = calculateTotalFees(
+        params.row.course
+      );
+      const totalFees = fees[category];
+      const discount = params.row.feesDiscount;
+      const netFees = totalFees - discount;
+      return formatCurrency(netFees);
+    },
   },
   {
     field: "dob",

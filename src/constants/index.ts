@@ -18,10 +18,6 @@ export const feesLinks = [
     label: "Student Fees",
     href: "/fees/student-fees",
   },
-  {
-    label: "Payment",
-    href: "/fees/payment",
-  },
 ];
 
 export const reportsLinks = [

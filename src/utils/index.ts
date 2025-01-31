@@ -72,3 +72,12 @@ export const calculateSemFees = (
 
   return totalFees;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const extractValidationMessage = (error: any): string => {
+  if (error?.data?.data?.errors?.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return error.data?.data.errors.map((err: any) => err.msg).join(", ");
+  }
+  return error?.data?.message || "An unknown error occurred.";
+};

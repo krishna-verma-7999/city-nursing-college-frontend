@@ -2,7 +2,7 @@
 import Button from "@/components/shared/button";
 import { FormControl, Select, MenuItem, InputLabel } from "@mui/material";
 import { feeSchema } from "@/schema";
-import { formatCurrency } from "@/utils";
+import { extractValidationMessage, formatCurrency } from "@/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -17,7 +17,7 @@ import {
 } from "@/store/api";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
-import { ErrorMessage, Semester } from "@/types";
+import { Semester } from "@/types";
 
 type SemesterType = {
   value: string;
@@ -216,8 +216,8 @@ const CreateFees = () => {
           router.push("/reports/coursewise");
         }
         if (res.error) {
-          const error = res.error as ErrorMessage;
-          toast.error(error.data.message);
+          const message = extractValidationMessage(res.error);
+          toast.error(message);
         }
       } else {
         const res = await createFees({
@@ -232,8 +232,8 @@ const CreateFees = () => {
           setFormattedTotal({ scFees: "", generalFees: "" });
         }
         if (res.error) {
-          const error = res.error as ErrorMessage;
-          toast.error(error.data.message);
+          const message = extractValidationMessage(res.error);
+          toast.error(message);
         }
       }
     }

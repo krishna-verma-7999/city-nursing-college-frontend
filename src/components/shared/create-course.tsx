@@ -8,6 +8,7 @@ import {
   useLazyGetCourseByIdQuery,
 } from "@/store/api";
 import { ErrorMessage } from "@/types";
+import { extractValidationMessage } from "@/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
@@ -66,7 +67,8 @@ const CreateCourse = () => {
           toast.success("Course is edited successfully");
           router.push("/reports/coursewise");
         } else if (course.error) {
-          toast.error("Course with this name already exists");
+          const message = extractValidationMessage(course.error);
+          toast.error(message);
         }
         if (course.error) {
           const error = course.error as ErrorMessage;
@@ -82,11 +84,12 @@ const CreateCourse = () => {
           toast.success("Course is created successfully");
           reset();
         } else if (course.error) {
-          toast.error("Course with this name already exists");
+          const message = extractValidationMessage(course.error);
+          toast.error(message);
         }
         if (course.error) {
-          const error = course.error as ErrorMessage;
-          toast.error(error.data.message);
+          const message = extractValidationMessage(course.error);
+          toast.error(message);
         }
       }
     }
