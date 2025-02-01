@@ -46,6 +46,7 @@ const handleGenerateInvoice = (rowData: any) => {
     semesterData,
   };
 
+  const newDate = new Date().toLocaleDateString();
   const invoiceTemplate = generateInvoiceTemplate(feesData);
   const element = document.createElement("div");
   element.innerHTML = invoiceTemplate;
@@ -54,7 +55,7 @@ const handleGenerateInvoice = (rowData: any) => {
   // Convert HTML to PDF with custom size
   html2pdf()
     .set({
-      filename: "invoice.pdf",
+      filename: `invoice_${rowData.student.registrationNumber}_${newDate}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: {
