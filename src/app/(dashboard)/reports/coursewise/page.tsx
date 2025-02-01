@@ -222,13 +222,25 @@ const Page = () => {
   }
 
   return (
-    <div className="py-5 px-2 max-w-7xl w-full mx-auto">
+    <div className="py-5 px-2 w-full mx-auto">
       <div className="h-[400px] w-full justify-center items-center flex">
         {coursesData && coursesData.length > 0 ? (
           <DataGrid
             rowSelection={false}
             rows={coursesData}
             columns={columns}
+            sx={{
+              marginInline: "15px",
+              "& .MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+              "& .MuiDataGrid-columnHeader:focus": {
+                outline: "none",
+              },
+              "& .MuiDataGrid-columnHeader:focus-within": {
+                outline: "none",
+              },
+            }}
             getRowId={(row) => row.id}
             pagination
             slots={{

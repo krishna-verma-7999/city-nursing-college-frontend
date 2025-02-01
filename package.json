@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^2.5.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
+    "html2pdf.js": "^0.10.2",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
     "lucide-react": "^0.473.0",

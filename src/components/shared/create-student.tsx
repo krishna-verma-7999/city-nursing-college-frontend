@@ -103,6 +103,9 @@ const CreateStudent = () => {
         setValue("studentName", student.name);
       }
     } else {
+      const formattedRegistrationDate = new Date().toISOString().split("T")[0];
+      setValue("registrationDate", formattedRegistrationDate);
+
       setValue("category", Caste.General);
     }
   }, [id, trigger, data, setValue]);

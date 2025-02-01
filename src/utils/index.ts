@@ -1,3 +1,4 @@
+import { Caste } from "@/store/api";
 import { CourseData, Semester } from "@/types";
 
 export const formatCurrency = (amount: number) => {
@@ -80,4 +81,15 @@ export const extractValidationMessage = (error: any): string => {
     return error.data?.data.errors.map((err: any) => err.msg).join(", ");
   }
   return error?.data?.message || "An unknown error occurred.";
+};
+
+export const flattingSemesterData = (data: Semester, category: Caste) => {
+  return data.fees.flatMap((fee) =>
+    fee.details
+      .filter((detail) => detail.caste === category)
+      .map((detail) => ({
+        type: fee.type,
+        amount: detail.amount,
+      }))
+  );
 };
