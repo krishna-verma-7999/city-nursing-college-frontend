@@ -126,7 +126,7 @@ const CreateFees = () => {
         setReadOnly(true);
       }
     }
-  }, [id, data, getFees]);
+  }, [id, data, getFees, setValue]);
 
   const { fields, append, remove } = useFieldArray({
     name: "feesType",

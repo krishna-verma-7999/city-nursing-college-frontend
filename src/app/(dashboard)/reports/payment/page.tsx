@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -242,8 +242,11 @@ const columns: GridColDef[] = [
 ];
 
 const Page = () => {
+  const [searchStudent, setSearchStudent] = useState("");
+  const [registeredNumber, setRegisteredNumber] = useState("");
   const { data, isLoading } = useGetBalanceFeesQuery({
     haveBalanceFees: false,
+    student: searchStudent,
   });
   const balanceFees = data?.data.map((row, index) => ({
     id: index + 1,
@@ -258,8 +261,33 @@ const Page = () => {
     );
   }
 
+  const handleSearch = () => {
+    setSearchStudent(registeredNumber); // Update searchNumber only on submit
+    setRegisteredNumber("");
+  };
+
   return (
     <div className="py-5 px-2 max-w-7xl w-full mx-auto">
+      <div className="rounded-md p-1 flex items-center gap-2 mx-3 my-5">
+        <div className="flex-1">
+          <input
+            type="text"
+            value={registeredNumber}
+            onChange={(e) => setRegisteredNumber(e.target.value)}
+            placeholder="Registration Number"
+            className={
+              "w-full rounded border border-gray-300 p-2 dark:border-dark-tertiary dark:bg-dark-tertiary focus:outline-none dark:text-white dark:focus:outline-none"
+            }
+          />
+        </div>
+        <div>
+          <div className="space-x-2 w-full flex">
+            <Button onClick={handleSearch} variant="outlined">
+              Search
+            </Button>
+          </div>
+        </div>
+      </div>
       <div className="h-[400px] w-full justify-center items-center flex">
         {balanceFees && balanceFees.length > 0 ? (
           <DataGrid
