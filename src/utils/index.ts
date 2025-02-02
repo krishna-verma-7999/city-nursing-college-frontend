@@ -10,6 +10,12 @@ export const formatCurrency = (amount: number) => {
   return formattedValue;
 };
 
+export const parseCurrency = (formattedValue: string): number => {
+  return parseFloat(
+    formattedValue.replace(/[^0-9.-]+/g, "") // Remove non-numeric characters except `.` and `-`
+  );
+};
+
 export const calculateTotalFees = (
   courseData: CourseData
 ): Record<string, number> => {

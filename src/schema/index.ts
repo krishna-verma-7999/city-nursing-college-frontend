@@ -1,4 +1,5 @@
 import { Caste, PaymentMode } from "@/store/api";
+import { parseCurrency } from "@/utils";
 import * as yup from "yup";
 
 const today = new Date();
@@ -138,12 +139,23 @@ export const resetPasswordSchema = yup
 
 export const studentFeesSchema = yup
   .object({
+    name: yup.string().required("Name is required"),
+    fatherName: yup.string().required("Father Name is required"),
     course: yup.string().required("Course is required"),
     semester: yup.string().required("Semester is required"),
     paidAmount: yup
       .number()
       .required("Fees Paid is required")
-      .typeError("Fees Paid must be a number"),
+      .typeError("Fees Paid must be a number")
+      .test(
+        "is-greater-than-netFees",
+        "Paid Amount Can't be more than Balance Fees",
+        function (value) {
+          const balanceFees = parseCurrency(this.parent.balanceFees); // Accessing balanceFees value
+          if (!value) return true; // Skip validation if either is missing
+          return value <= Number(balanceFees);
+        }
+      ),
     payDate: yup
       .string() // Now treating it as a string for type="date" input
       .required("Payment date is required")
@@ -172,10 +184,10 @@ export const studentFeesSchema = yup
         schema.required("Transaction ID is required for online payments"),
       otherwise: (schema) => schema.notRequired(), // Not required for other modes
     }),
-    balanceFees: yup.number().required("Balance Fees is required"),
-    netFees: yup.number().required("Net fees is required"),
-    totalFees: yup.number().required("Total fees is required"),
-    discount: yup.number().required("Discount is required"),
+    balanceFees: yup.string().required("Balance Fees is required"),
+    netFees: yup.string().required("Net fees is required"),
+    totalFees: yup.string().required("Total fees is required"),
+    discount: yup.string().required("Discount is required"),
     session: yup.number().required("Enrollment year is required"),
   })
   .required();

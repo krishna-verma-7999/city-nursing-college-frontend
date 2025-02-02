@@ -4,6 +4,7 @@ import Card from "@/components/shared/card";
 // import PieChartComponent from "@/components/shared/pie-chart";
 import { useDashboardQuery } from "@/store/api";
 import { Dashboard } from "@/types";
+import { formatCurrency } from "@/utils";
 import { GraduationCap, IndianRupee, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -22,7 +23,7 @@ export default function Home() {
   }, [data]);
   return (
     <div className="p-5 max-w-7xl mx-auto">
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card
           title="Total courses"
           count={dashboardData?.coursesCount || 0}
@@ -46,14 +47,22 @@ export default function Home() {
         <Card
           title="Monthly Fees Collection"
           gradient
-          count={dashboardData?.currentMonthFees || 0}
+          count={formatCurrency(
+            dashboardData?.currentMonthFees
+              ? dashboardData?.currentMonthFees
+              : 0
+          )}
           icon={IndianRupee}
         />
         <Card
           title="Balance Fees Amount"
           gradient
           icon={IndianRupee}
-          count={dashboardData?.currentMonthBalanceFees || 0}
+          count={formatCurrency(
+            dashboardData?.currentMonthBalanceFees
+              ? dashboardData?.currentMonthBalanceFees
+              : 0
+          )}
         />
       </div>
       {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-10 justify-between ">

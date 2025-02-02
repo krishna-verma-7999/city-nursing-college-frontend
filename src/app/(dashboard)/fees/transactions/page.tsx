@@ -234,7 +234,10 @@ const columns: GridColDef[] = [
     field: "modeOfPayment",
     headerName: "Mode of payment",
     width: 150,
-    renderCell: (params) => `${MODE[params.value as PaymentMode]}`,
+    renderCell: (params) => {
+      const paidAmount = params.row.paidAmount;
+      return `${paidAmount > 0 ? MODE[params.value as PaymentMode] : "--"}`;
+    },
   },
   {
     field: "action",
@@ -325,7 +328,7 @@ const Page = () => {
             }}
           />
         ) : (
-          <p className="text-center ">No Balance Fees Yet</p>
+          <p className="text-center ">No Transactions Yet</p>
         )}
       </div>
     </div>
