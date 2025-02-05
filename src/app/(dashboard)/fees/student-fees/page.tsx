@@ -382,6 +382,16 @@ const Page = () => {
                 />
               </div>
               <div>
+                <Input
+                  type="text"
+                  label="Remark"
+                  register={register("remark")}
+                  placeholder="Enter fees type"
+                  error={!!errors.remark}
+                  message={errors.remark?.message}
+                />
+              </div>
+              <div>
                 <FormControl variant="standard" fullWidth>
                   <InputLabel id="semester" className="text-[12px]">
                     Mode of Payment

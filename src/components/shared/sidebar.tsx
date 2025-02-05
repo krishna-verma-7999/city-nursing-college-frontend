@@ -141,9 +141,13 @@ const SidebarLink = ({ href, icon: Icon, label }: SidebarLinkProps) => {
   const pathname = usePathname();
   const isActive =
     pathname === href || (pathname === "/" && href === "/dashboard");
-
+  const dispatch = useAppDispatch();
   return (
-    <Link href={href} className="w-full">
+    <Link
+      href={href}
+      className="w-full"
+      onClick={() => dispatch(setIsSidebarCollapsed(true))}
+    >
       <div
         className={`relative flex cursor-pointer items-center "justify-start" ${!Icon && "pl-16"} gap-3 px-8 py-3 transition-colors hover:bg-gray-100 dark:bg-black dark:hover:bg-gray-700 ${isActive && "bg-gray-100 text-white dark:bg-gray-600"}`}
       >

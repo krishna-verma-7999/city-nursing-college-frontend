@@ -8,60 +8,68 @@ import {
 } from "@mui/x-data-grid";
 import { PaymentMode, useGetBalanceFeesQuery } from "@/store/api";
 import { Download, Loader2 } from "lucide-react";
-import { calculateSemFees, formatCurrency } from "@/utils";
+import {
+  calculateSemFees,
+  flattingSemesterData,
+  formatCurrency,
+} from "@/utils";
 import { Button } from "@mui/material";
 import Papa from "papaparse";
 import { MODE } from "@/constants";
-import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import { generateInvoiceTemplate } from "@/pdf/template";
+import html2pdf from "html2pdf.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleGenerateInvoice = (rowData: any) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const doc: any = new jsPDF();
+  const semesterFees = calculateSemFees(rowData.semester);
+  const categoryWiseFees = semesterFees[rowData.student.category];
+  const netFees = categoryWiseFees - rowData.totalDiscount;
+  const semesterData = flattingSemesterData(
+    rowData.semester,
+    rowData.student.category
+  );
+  const transactionId = rowData.row?.transactionId;
+  const feesData = {
+    registrationNumber: rowData.student.registrationNumber,
+    studentName: rowData.student.name,
+    courseName: rowData.student?.course?.name,
+    semesterYear: rowData.semester.semesterNumber,
+    totalFees: formatCurrency(categoryWiseFees),
+    discount: formatCurrency(rowData.totalDiscount),
+    netFees: formatCurrency(netFees),
+    transactionNumber: transactionId,
+    payableFees: formatCurrency(netFees - rowData.balanceFees),
+    paidAmount: formatCurrency(rowData.paidAmount),
+    balanceFees: formatCurrency(rowData.balanceFees),
+    modeOfPayment: rowData.modeOfPayment,
+    paymentDate: new Date(rowData.payDate).toLocaleDateString(),
+    semesterData,
+  };
 
-  // Add a title
-  doc.setFontSize(18);
-  doc.text("Invoice", 10, 20);
+  const newDate = new Date().toLocaleDateString();
+  const invoiceTemplate = generateInvoiceTemplate(feesData);
+  const element = document.createElement("div");
+  element.innerHTML = invoiceTemplate;
+  document.body.appendChild(element);
 
-  // Define table data
-  const tableData = [
-    ["Description", "Amount"],
-    ["Registration Number", rowData.student.registrationNumber],
-    ["Student Name", rowData.student.name],
-    ["Course Name", rowData.student?.course?.name],
-    ["Semester/Year", rowData.semester.semesterNumber],
-    [
-      "Total Fees",
-      formatCurrency(
-        calculateSemFees(rowData.semester)[rowData.student.category]
-      ),
-    ],
-    ["Discount", formatCurrency(rowData.totalDiscount)],
-    ["Net Fees", formatCurrency(rowData.totalFees)],
-    ["Paid Amount", formatCurrency(rowData.paidAmount)],
-    ["Balance Fees", formatCurrency(rowData.balanceFees)],
-    ["Mode of payment", rowData.modeOfPayment],
-    ["Payment Date", new Date(rowData.payDate).toLocaleDateString()],
-  ];
-
-  // Generate the table using autoTable
-
-  doc.autoTable({
-    startY: 30, // Start table below the title
-    head: [tableData[0]], // First row as header
-    body: tableData.slice(1), // Rest of the rows as body
-    theme: "striped", // Apply a striped theme
-    styles: { fontSize: 12, cellPadding: 5 }, // Custom styles
-    headStyles: { fillColor: [22, 160, 133] }, // Green header background
-    columnStyles: {
-      0: { cellWidth: 120 }, // Description column width
-      1: { cellWidth: 60 }, // Amount column width
-    },
-  });
-
-  // Save the PDF
-  doc.save(`Invoice_${rowData.student.registrationNumber}.pdf`);
+  // Convert HTML to PDF with custom size
+  html2pdf()
+    .set({
+      filename: `invoice_${rowData.student.registrationNumber}_${newDate}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: {
+        unit: "mm",
+        format: [240, 180], // Custom width and height (in mm)
+        orientation: "portrait",
+      },
+    })
+    .from(element)
+    .save()
+    .then(() => {
+      document.body.removeChild(element); // Clean up
+    });
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

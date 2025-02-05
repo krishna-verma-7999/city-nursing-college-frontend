@@ -189,6 +189,7 @@ export const studentFeesSchema = yup
     totalFees: yup.string().required("Total fees is required"),
     discount: yup.string().required("Discount is required"),
     session: yup.number().required("Enrollment year is required"),
+    remark: yup.string(),
   })
   .required();
 

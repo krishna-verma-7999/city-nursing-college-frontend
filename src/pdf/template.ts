@@ -1,3 +1,4 @@
+import { MODE } from "@/constants";
 import { PaymentMode } from "@/store/api";
 import { formatCurrency } from "@/utils";
 
@@ -22,15 +23,6 @@ type FeesData = {
 };
 
 export const generateInvoiceTemplate = (feesData: FeesData) => {
-  const PaymentId =
-    feesData.modeOfPayment !== PaymentMode.CASH
-      ? `<p class="fees-details-item"
-        style=" font-weight: bold; border-bottom: 1px solid #b6b6b6; flex-direction: column; align-items: start; gap:2px; padding-top: 0px;">
-        <span style="font-weight: bold;">${feesData.modeOfPayment === PaymentMode.CHEQUE ? "Cheque No." : "Transaction ID"}:</span>
-        <span style="overflow-wrap: anywhere;">sf32tr24gfvqsdfsdr3423423r23t14f132r32f</span>
-    </p>`
-      : "";
-
   const invoiceTemplate = `<!DOCTYPE html>
 <html lang="en">
 
@@ -174,13 +166,15 @@ export const generateInvoiceTemplate = (feesData: FeesData) => {
                                 <span style=" font-weight: bold;">Fee Type </span>
                                 <span style="font-weight: bold;">Amount</span>
                             </p>
-                            ${feesData.semesterData.map(
-                              (sem, i) =>
-                                `<p key={${i}} class="fees-details-item">
+                            ${feesData.semesterData
+                              .map(
+                                (sem, i) =>
+                                  `<p key={${i}} class="fees-details-item">
                                 <span>${sem.type} </span>
                                 <span>${formatCurrency(sem.amount)}</span>
                             </p>`
-                            )}
+                              )
+                              .join("")}
                         </div>
                     </div>
                     <div class="summary-1" style="font-family: sans-serif; width: 50%;">
@@ -190,9 +184,8 @@ export const generateInvoiceTemplate = (feesData: FeesData) => {
                         <div style="display: flex;flex-direction: column; padding-bottom: 10px;">
                             <p class="fees-details-item" style="padding-top:10px;   font-weight: bold; border-bottom: 1px solid #b6b6b6;">
                                 <span>Mode</span>
-                                <span style="font-weight: bold;">CASH</span>
+                                <span style="font-weight: bold;">${MODE[feesData.modeOfPayment as PaymentMode]}</span>
                             </p>
-                           ${PaymentId}
                             <p class="fees-details-item">
                                 <span>Total Fees</span>
                                 <span>${feesData.netFees}</span>

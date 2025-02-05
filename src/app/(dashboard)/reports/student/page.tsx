@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -148,10 +148,18 @@ const Page = () => {
     page: 0,
     pageSize: 5,
   });
-  const { data: students, isLoading } = useGetStudentsQuery({
-    page: paginationModel.page,
+  const {
+    data: students,
+    isLoading,
+    refetch,
+  } = useGetStudentsQuery({
+    page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [paginationModel]);
 
   const totalRowCount = students?.data.totalDocs;
   const studentsData = students?.data?.docs.map((row, index) => ({
