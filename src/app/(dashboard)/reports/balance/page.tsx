@@ -16,7 +16,6 @@ import {
 import { Button } from "@mui/material";
 import Papa from "papaparse";
 import { MODE } from "@/constants";
-import "jspdf-autotable";
 import { generateInvoiceTemplate } from "@/pdf/template";
 import html2pdf from "html2pdf.js";
 
