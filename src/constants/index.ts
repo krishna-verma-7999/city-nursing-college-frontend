@@ -19,8 +19,16 @@ export const feesLinks = [
     href: "/fees/student-fees",
   },
   {
+    label: "Supplementary Fees",
+    href: "/fees/supply-fees",
+  },
+  {
     label: "Transactions",
     href: "/fees/transactions",
+  },
+  {
+    label: "Supplementary Transactions",
+    href: "/fees/supplementaryTransactions",
   },
 ];
 

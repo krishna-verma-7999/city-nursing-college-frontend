@@ -144,6 +144,12 @@ const columns: GridColDef[] = [
 ];
 
 const Page = () => {
+  const [registerationNumber, setRegistrationNumber] = useState<
+    string | undefined
+  >(undefined);
+  const [studentRegistrationNumber, setStudentRegistrationNumber] = useState<
+    string | undefined
+  >(undefined);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
@@ -155,6 +161,7 @@ const Page = () => {
   } = useGetStudentsQuery({
     page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
+    studentRegistrationNumber,
   });
 
   useEffect(() => {
@@ -175,8 +182,38 @@ const Page = () => {
     );
   }
 
+  const searchStudentHandler = () => {
+    setStudentRegistrationNumber(registerationNumber);
+  };
+
+  const inputStyles =
+    "w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary focus:outline-none dark:text-white dark:focus:outline-none";
+
   return (
     <div className="py-5 px-2 w-full mx-auto">
+      <div className="mb-4 px-4">
+        <div className="rounded-md p-1 flex items-center gap-2  mx-auto ">
+          <input
+            className={inputStyles}
+            type="text"
+            placeholder="Registration Number"
+            value={registerationNumber}
+            onChange={(e) => {
+              const target = e.currentTarget;
+              target.value = target.value.replace(/[^0-9]/g, "");
+              setRegistrationNumber(target.value);
+            }}
+          />
+          <Button
+            type="submit"
+            className="w-fit !mt-0"
+            variant="contained"
+            onClick={searchStudentHandler}
+          >
+            Search
+          </Button>
+        </div>
+      </div>
       <div className="h-[400px] w-full justify-center items-center flex">
         {studentsData && studentsData.length > 0 ? (
           <DataGrid

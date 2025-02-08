@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   DataGrid,
   GridColDef,
   GridToolbarContainer,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
-import { PaymentMode, useGetBalanceFeesQuery } from "@/store/api";
+import { PaymentMode, useGetSupplyFeesQuery } from "@/store/api";
 import { Download, Loader2 } from "lucide-react";
 import {
   calculateSemFees,
@@ -16,9 +16,8 @@ import {
 import { Button } from "@mui/material";
 import Papa from "papaparse";
 import { MODE } from "@/constants";
-import "jspdf-autotable";
-import { generateInvoiceTemplate } from "@/pdf/template";
 import html2pdf from "html2pdf.js";
+import { generateSupplyInvoiceTemplate } from "@/pdf/template";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleGenerateInvoice = (rowData: any) => {
@@ -48,7 +47,7 @@ const handleGenerateInvoice = (rowData: any) => {
   };
 
   const newDate = new Date().toLocaleDateString();
-  const invoiceTemplate = generateInvoiceTemplate(feesData);
+  const invoiceTemplate = generateSupplyInvoiceTemplate(feesData);
   const element = document.createElement("div");
   element.innerHTML = invoiceTemplate;
   document.body.appendChild(element);
@@ -76,24 +75,19 @@ const handleGenerateInvoice = (rowData: any) => {
 const CustomToolbar = ({ data }: { data: any[] }) => {
   const handleExport = () => {
     const exportData = data.map((row) => {
-      const semesterFees = calculateSemFees(row.semester);
-      const categoryWiseFees = semesterFees[row.student.category];
-
       return {
         ID: row.id,
         "Registration Number": row.student?.registrationNumber || "N/A",
         "Student Name": row.student?.name || "N/A",
         "Course Name": row.student?.course?.name || "N/A",
+        "Subject Name": row.subject || "N/A",
+        "Supply Number": row.supplyNumber || "N/A",
         "Semester / Year": row.semester?.semesterNumber || "N/A",
-        "Total Fees": categoryWiseFees || 0,
-        Discount: row.totalDiscount || 0,
-        "Net Fees": row.totalFees || 0,
-        "Balance Fees": row.balanceFees || 0,
         "Paid Amount": row.paidAmount || 0,
-        Remark: row?.remark || "--",
         "Payment Date": row.payDate
           ? new Date(row.payDate).toLocaleDateString()
           : "N/A",
+        Remark: row?.remark || "--",
         "Transaction Id":
           row.modeOfPayment === PaymentMode.ONLINE_TRANSFER
             ? row.transactionId
@@ -168,33 +162,17 @@ const columns: GridColDef[] = [
     },
   },
   {
-    field: "netFees",
-    headerName: "Total Fees",
-    width: 150,
+    field: "subject",
+    headerName: "Subject Name",
+    width: 125,
+  },
+  {
+    field: "supplyNumber",
+    headerName: "Supply Number",
+    width: 125,
     renderCell: (params) => {
-      const totalFees = calculateSemFees(params.row.semester);
-      const categoryWiseFees = totalFees[params.row.student.category];
-      return formatCurrency(categoryWiseFees);
+      return params.row.supplyNumber || "--";
     },
-  },
-
-  {
-    field: "totalDiscount",
-    headerName: "Discount",
-    width: 150,
-    renderCell: (params) => formatCurrency(params.value),
-  },
-  {
-    field: "totalFees",
-    headerName: "Net Fees",
-    width: 150,
-    renderCell: (params) => formatCurrency(params.value),
-  },
-  {
-    field: "balanceFees",
-    headerName: "Balance Fees",
-    width: 150,
-    renderCell: (params) => formatCurrency(params.value),
   },
   {
     field: "paidAmount",
@@ -237,7 +215,10 @@ const columns: GridColDef[] = [
     field: "modeOfPayment",
     headerName: "Mode of payment",
     width: 150,
-    renderCell: (params) => `${MODE[params.value as PaymentMode]}`,
+    renderCell: (params) => {
+      const paidAmount = params.row.paidAmount;
+      return `${paidAmount > 0 ? MODE[params.value as PaymentMode] : "--"}`;
+    },
   },
   {
     field: "action",
@@ -257,22 +238,9 @@ const columns: GridColDef[] = [
 ];
 
 const Page = () => {
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 5,
-  });
-  const { data, isLoading, refetch } = useGetBalanceFeesQuery({
-    haveBalanceFees: true,
-    page: paginationModel.page + 1,
-    limit: paginationModel.pageSize,
-  });
-  const totalRowCount = data?.data.totalDocs;
+  const { data, isLoading } = useGetSupplyFeesQuery();
 
-  useEffect(() => {
-    refetch();
-  }, [paginationModel]);
-
-  const balanceFees = data?.data.docs.map((row, index) => ({
+  const supplyFees = data?.data?.map((row, index) => ({
     id: index + 1,
     ...row,
   }));
@@ -288,9 +256,9 @@ const Page = () => {
   return (
     <div className="py-5 px-2  w-full mx-auto">
       <div className="h-[400px] w-full justify-center items-center flex">
-        {balanceFees && balanceFees.length > 0 ? (
+        {supplyFees && supplyFees.length > 0 ? (
           <DataGrid
-            rows={balanceFees}
+            rows={supplyFees}
             columns={columns}
             sx={{
               marginInline: "15px",
@@ -306,17 +274,14 @@ const Page = () => {
             }}
             rowSelection={false}
             getRowId={(row) => row.id}
-            paginationMode="server"
+            paginationMode="client"
             pageSizeOptions={[5, 10, 25, 50]}
-            paginationModel={paginationModel}
-            onPaginationModelChange={setPaginationModel}
-            rowCount={totalRowCount}
             slots={{
-              toolbar: () => <CustomToolbar data={balanceFees} />,
+              toolbar: () => <CustomToolbar data={supplyFees} />,
             }}
           />
         ) : (
-          <p className="text-center ">No Balance Fees Yet</p>
+          <p className="text-center ">No Transactions Yet</p>
         )}
       </div>
     </div>

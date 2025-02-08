@@ -22,17 +22,17 @@ const Button = ({
 }: Props) => {
   return (
     <button
-    onClick={onClick}
-    type={type}
-    className={clsx(
-      "mt-4 flex w-full justify-center rounded-md border border-transparent bg-blue-primary px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none",
-      {
-        "cursor-not-allowed opacity-50": isDisable || isLoading,
-      },
-      className // User-provided className
-    )}
-    disabled={isDisable || isLoading}
-  >
+      onClick={onClick}
+      type={type}
+      className={clsx(
+        "mt-4 flex w-full justify-center rounded-md border border-transparent bg-[#1976d2] px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none",
+        {
+          "cursor-not-allowed opacity-50": isDisable || isLoading,
+        },
+        className // User-provided className
+      )}
+      disabled={isDisable || isLoading}
+    >
       {isLoading ? loadingTitle : title}
     </button>
   );

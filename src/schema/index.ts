@@ -198,3 +198,49 @@ export const studentFeesSearchSchema = yup
     registerationNumber: yup.string().required("Register Number is required"),
   })
   .required();
+
+export const supplyFeesSchema = yup
+  .object({
+    name: yup.string().required("Name is required"),
+    fatherName: yup.string().required("Father Name is required"),
+    course: yup.string().required("Course is required"),
+    semester: yup.string().required("Semester is required"),
+    subjectName: yup.string().required("Subject Name is required"),
+    paidAmount: yup
+      .number()
+      .required("Fees Paid is required")
+      .typeError("Fees Paid must be a number"),
+
+    payDate: yup
+      .string() // Now treating it as a string for type="date" input
+      .required("Payment date is required")
+      .matches(
+        /^\d{4}-\d{2}-\d{2}$/, // Regex to validate the date format as YYYY-MM-DD
+        "Invalid date format"
+      )
+      .test("is-not-future", "Pay date cannot be in the future", (value) => {
+        if (!value) return true;
+        const date = new Date(value);
+        return date <= today; // Check if the date is not in the future
+      }),
+
+    modeOfPayment: yup
+      .string()
+      .required("Mode of payment is required")
+      .oneOf(Object.values(PaymentMode))
+      .typeError(
+        `Mode of payment must be a with in ${Object.values(PaymentMode).join(", ")})}`
+      ),
+
+    transactionId: yup.string().when("modeOfPayment", {
+      is: (mode: string) =>
+        mode === PaymentMode.ONLINE_TRANSFER || mode === PaymentMode.CHEQUE, // Check for both modes
+      then: (schema) =>
+        schema.required("Transaction ID is required for online payments"),
+      otherwise: (schema) => schema.notRequired(), // Not required for other modes
+    }),
+    supplyNo: yup.number().required("Supply No."),
+    session: yup.number().required("Enrollment year is required"),
+    remark: yup.string(),
+  })
+  .required();

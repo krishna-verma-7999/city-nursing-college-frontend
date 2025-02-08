@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DataGrid,
   GridColDef,
@@ -93,6 +93,7 @@ const CustomToolbar = ({ data }: { data: any[] }) => {
         "Payment Date": row.payDate
           ? new Date(row.payDate).toLocaleDateString()
           : "N/A",
+        Remark: row?.remark || "--",
         "Transaction Id":
           row.modeOfPayment === PaymentMode.ONLINE_TRANSFER
             ? row.transactionId
@@ -213,6 +214,12 @@ const columns: GridColDef[] = [
     renderCell: (params) => new Date(params.value).toLocaleDateString(),
   },
   {
+    field: "remark",
+    headerName: "Remark",
+    width: 150,
+    renderCell: (params) => params?.value || "--",
+  },
+  {
     field: "transactionId",
     headerName: "Transaction Id",
     width: 150,
@@ -257,13 +264,26 @@ const columns: GridColDef[] = [
 ];
 
 const Page = () => {
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 5,
+  });
   const [searchStudent, setSearchStudent] = useState("");
   const [registeredNumber, setRegisteredNumber] = useState("");
-  const { data, isLoading } = useGetBalanceFeesQuery({
+  const { data, isLoading, refetch } = useGetBalanceFeesQuery({
     haveBalanceFees: false,
     student: searchStudent,
+    page: paginationModel.page + 1,
+    limit: paginationModel.pageSize,
   });
-  const balanceFees = data?.data.map((row, index) => ({
+
+  const totalRowCount = data?.data.totalDocs;
+
+  useEffect(() => {
+    refetch();
+  }, [paginationModel]);
+
+  const balanceFees = data?.data?.docs.map((row, index) => ({
     id: index + 1,
     ...row,
   }));
@@ -297,7 +317,7 @@ const Page = () => {
         </div>
         <div>
           <div className="space-x-2 w-full flex">
-            <Button onClick={handleSearch} variant="outlined">
+            <Button onClick={handleSearch} variant="contained">
               Search
             </Button>
           </div>
@@ -322,7 +342,11 @@ const Page = () => {
             }}
             rowSelection={false}
             getRowId={(row) => row.id}
-            pagination
+            paginationMode="server"
+            pageSizeOptions={[5, 10, 25, 50]}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            rowCount={totalRowCount}
             slots={{
               toolbar: () => <CustomToolbar data={balanceFees} />,
             }}

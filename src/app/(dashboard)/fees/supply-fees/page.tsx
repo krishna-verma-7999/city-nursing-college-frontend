@@ -10,16 +10,15 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 import Button from "@/components/shared/button";
 import Input from "@/components/shared/input";
-import { studentFeesSchema, studentFeesSearchSchema } from "@/schema";
+import { studentFeesSearchSchema, supplyFeesSchema } from "@/schema";
 import {
   PaymentMode,
-  useCreateStudentFeeMutation,
-  useLazyGetLatestStudentFeeQuery,
+  useCreateStudentSupplyMutation,
   useLazyGetStudentByIdQuery,
+  useLazyGetStudentCountQuery,
 } from "@/store/api";
 import { StudentData } from "@/types";
 import DatePicker from "@/components/shared/date-picker";
-import { calculateSemesterFees, formatCurrency } from "@/utils";
 import { MODE } from "@/constants";
 import { redirect } from "next/navigation";
 import LoadingPage from "@/components/shared/loadingPage";
@@ -29,17 +28,14 @@ type SemesterType = { value: string; label: number }[];
 const Page = () => {
   const [student, setStudent] = useState<StudentData | null>(null);
   const [semesters, setSemesters] = useState<SemesterType>([]);
-  const [balancedFees, setBalancedFees] = useState("");
-  const [netFees, setNetFees] = useState(0);
+  const [debouncedSubjectName, setDebouncedSubjectName] = useState("");
 
-  const [
-    searchStudent,
-    { data: SearchedStudent, isLoading: isStudentFetching },
-  ] = useLazyGetStudentByIdQuery();
-  const [latestStudentFee, { isLoading: isFetchingLatestFee }] =
-    useLazyGetLatestStudentFeeQuery();
-  const [createStudentFee, { isLoading: isCreatingFee }] =
-    useCreateStudentFeeMutation();
+  const [searchStudent, { isLoading: isStudentFetching }] =
+    useLazyGetStudentByIdQuery();
+  const [studentCount, { isLoading: isFetchingLatestFee }] =
+    useLazyGetStudentCountQuery();
+  const [createStudentSupply, { isLoading: isCreatingFee }] =
+    useCreateStudentSupplyMutation();
 
   // Student search form
   const {
@@ -62,32 +58,20 @@ const Page = () => {
     setValue,
     watch,
     reset: feeReset,
-  } = useForm<InferType<typeof studentFeesSchema>>({
-    resolver: yupResolver(studentFeesSchema),
+  } = useForm<InferType<typeof supplyFeesSchema>>({
+    resolver: yupResolver(supplyFeesSchema),
     defaultValues: {
       name: "",
       semester: "",
       fatherName: "",
-      balanceFees: "",
       course: "",
-      discount: "",
       modeOfPayment: PaymentMode.ONLINE_TRANSFER,
       paidAmount: 0,
       payDate: "",
       session: new Date().getFullYear(),
-      totalFees: "",
       transactionId: "",
     },
   });
-
-  const paidAmount = watch("paidAmount");
-
-  useEffect(() => {
-    if (netFees > 0) {
-      const pendingAmount = netFees - paidAmount;
-      setBalancedFees(formatCurrency(+pendingAmount));
-    }
-  }, [paidAmount, netFees]);
 
   useEffect(() => {
     const formattedData = new Date().toISOString().split("T")[0];
@@ -95,24 +79,65 @@ const Page = () => {
   }, []);
 
   const semester = watch("semester");
+  const subjectName = watch("subjectName");
   const modeOfPayment = watch("modeOfPayment");
 
-  const onFeesSubmit = async (data: InferType<typeof studentFeesSchema>) => {
+  const getSupplyCount = async (
+    student: string,
+    semester: string,
+    subject: string
+  ) => {
+    const response = await studentCount({
+      semester,
+      student,
+      subject,
+    });
+    if (response.error) {
+      toast.error("Error in fetching supply");
+    }
+    if (response && response.data && response?.data) {
+      console.log("Response", response.data.data);
+      setValue("supplyNo", response.data.data + 1);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSubjectName(subjectName);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer); // Corrected cleanup function
+    };
+  }, [subjectName]);
+
+  useEffect(() => {
+    if (student && semester && debouncedSubjectName)
+      getSupplyCount(student?._id, semester, debouncedSubjectName);
+  }, [semester, student, debouncedSubjectName]);
+
+  const onFeesSubmit = async (data: InferType<typeof supplyFeesSchema>) => {
     if (!student) return;
-    const response = await createStudentFee({
-      student: student._id,
-      ...data,
+    const response = await createStudentSupply({
+      paidAmount: data.paidAmount,
+      modeOfPayment: data.modeOfPayment,
       payDate: data.payDate,
+      remark: data?.remark ? data.remark : undefined,
+      semester: data.semester,
+      student: student._id,
+      subject: data.subjectName.replace(/\s+/g, "_").toUpperCase(),
+      supplyNumber: data.supplyNo,
+      transactionId: data.transactionId,
     });
 
     if (response?.data?.success) {
-      toast.success("Student fees added successfully");
+      toast.success("Student Fees submitted successfully");
       feeReset();
       searchReset();
-      redirect("/fees/transactions");
+      redirect("/fees/supplementaryTransactions");
     }
     if (response.error) {
-      toast.success("Error is creating fees");
+      toast.success("Error is submitting fees");
     }
   };
 
@@ -146,51 +171,9 @@ const Page = () => {
     }
   };
 
-  useEffect(() => {}, []);
-
-  const handleSemesterChange = async (e: any) => {
-    const selectedSemester = e.target.value as string;
-    setValue("semester", selectedSemester);
-
-    if (student) {
-      const response = await latestStudentFee({
-        semester: selectedSemester,
-        student: student._id,
-      });
-      if (response.data && response.data.success && response.data.data) {
-        const totalValue =
-          response.data.data.totalFees + response.data.data.totalDiscount;
-        setValue(
-          "balanceFees",
-          formatCurrency(+response.data.data.balanceFees)
-        );
-        setValue("discount", formatCurrency(response.data.data.totalDiscount));
-        setValue("totalFees", formatCurrency(response.data.data.totalFees));
-        setValue("netFees", formatCurrency(totalValue));
-        setNetFees(response.data.data.balanceFees);
-        toast.success("Latest Fee found!");
-      } else if (SearchedStudent && SearchedStudent.data) {
-        const discount =
-          SearchedStudent.data.feesDiscount /
-          SearchedStudent.data.course.duration;
-        const fees: Record<string, number> = calculateSemesterFees(
-          SearchedStudent.data.course,
-          selectedSemester
-        );
-        setValue("discount", formatCurrency(discount));
-        setValue(
-          "totalFees",
-          formatCurrency(fees[SearchedStudent.data.category] - discount)
-        );
-      }
-      if (response.error)
-        toast.error("Error while fetching latest fee details");
-    }
-  };
-
   return (
     <section className="py-5 px-2 max-w-7xl w-full mx-auto">
-      <h1 className="font-bold text-xl">Student Fee</h1>
+      <h1 className="font-bold text-xl">Supply Fee</h1>
 
       <div className="border border-gray-300 bg-white p-4">
         <form
@@ -294,7 +277,6 @@ const Page = () => {
                     labelId="semester"
                     disabled={!student}
                     {...register("semester")}
-                    onChange={handleSemesterChange}
                   >
                     {semesters?.map((sem) => (
                       <MenuItem key={sem.value} value={sem.value}>
@@ -313,48 +295,24 @@ const Page = () => {
               <div>
                 <Input
                   type="text"
-                  label="Total Fees"
-                  register={register("netFees")}
-                  disabled
-                  placeholder="Auto Filled through Registration Form"
-                  error={!!errors.totalFees}
-                  message={errors.totalFees?.message}
+                  label="Subject"
+                  register={register("subjectName")}
+                  placeholder="Subject Code"
+                  error={!!errors.subjectName}
+                  message={errors.subjectName?.message}
                 />
               </div>
               <div>
                 <Input
-                  type="text"
-                  label="Discount"
-                  register={register("discount")}
+                  type="number"
+                  label="Supply Number"
                   disabled
-                  placeholder="Auto Filled through Registration Form"
-                  error={!!errors.discount}
-                  message={errors.discount?.message}
+                  register={register("supplyNo")}
+                  placeholder="Supply Number"
+                  error={!!errors.supplyNo}
+                  message={errors.supplyNo?.message}
                 />
               </div>
-              <div>
-                <Input
-                  type="text"
-                  label="Net Fees"
-                  register={register("totalFees")}
-                  disabled
-                  placeholder="Auto Filled through Registration Form"
-                  error={!!errors.totalFees}
-                  message={errors.totalFees?.message}
-                />
-              </div>
-              <div>
-                <Input
-                  type="text"
-                  label="Balanced Fees"
-                  register={register("balanceFees")}
-                  disabled
-                  placeholder="Auto Filled through Registration Form"
-                  error={!!errors.balanceFees}
-                  message={errors.balanceFees?.message}
-                />
-              </div>
-
               <div>
                 <Input
                   type="number"
@@ -367,31 +325,7 @@ const Page = () => {
                   message={errors.paidAmount?.message}
                 />
               </div>
-              <div className="relative">
-                <label className="text-[10px] text-gray-500 font-medium">
-                  Rest Amount
-                </label>
-                <input
-                  type={"text"}
-                  value={balancedFees}
-                  className={
-                    "w-full rounded border border-gray-300 p-2 shadow-sm dark:border-dark-tertiary dark:bg-dark-tertiary focus:outline-none dark:text-white dark:focus:outline-none mt-1 placeholder:text-[10px]"
-                  }
-                  placeholder="Auto Filled through Registration Form"
-                  disabled={true}
-                />
-              </div>
-              <div>
-                <Input
-                  type="text"
-                  subLabel="optional"
-                  label="Remark"
-                  register={register("remark")}
-                  placeholder="Enter fees type"
-                  error={!!errors.remark}
-                  message={errors.remark?.message}
-                />
-              </div>
+
               <div>
                 <FormControl variant="standard" fullWidth>
                   <InputLabel id="semester" className="text-[12px]">
@@ -452,6 +386,17 @@ const Page = () => {
                   />
                 </div>
               )}
+              <div>
+                <Input
+                  type="text"
+                  subLabel="optional"
+                  label="Remark"
+                  register={register("remark")}
+                  placeholder="Enter fees type"
+                  error={!!errors.remark}
+                  message={errors.remark?.message}
+                />
+              </div>
             </div>
 
             <div className="flex justify-end space-x-2 mt-4">

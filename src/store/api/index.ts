@@ -9,6 +9,7 @@ import {
   EditSemester,
   Dashboard,
   PaginatedRequest,
+  SupplyFees,
 } from "@/types";
 import {
   BaseQueryFn,
@@ -45,6 +46,7 @@ type CreateFeesStructure = {
 type CreateStudentFeePayload = {
   student: string;
   semester: string;
+  remark?: string;
   paidAmount: number;
   modeOfPayment: PaymentMode;
   payDate: string;
@@ -98,7 +100,7 @@ const baseQueryWithAuth: BaseQueryFn<
 export const api = createApi({
   baseQuery: baseQueryWithAuth,
   reducerPath: "api",
-  tagTypes: ["course", "fees", "students", "student-fees"],
+  tagTypes: ["course", "fees", "students", "student-fees", "supply"],
   endpoints: (build) => ({
     login: build.mutation<{ data: { accessToken: string } }, Login>({
       query: (user) => ({
@@ -182,15 +184,16 @@ export const api = createApi({
     }),
     getStudents: build.query<
       PaginatedApiResponse<StudentData[]>,
-      PaginatedRequest
+      PaginatedRequest & { studentRegistrationNumber: string | undefined }
     >({
-      query: ({ page = 1, limit = 25 }) => {
+      query: ({ page = 1, limit = 25, studentRegistrationNumber }) => {
         return {
           url: `/student`,
           method: "GET",
           params: {
             page,
             limit,
+            studentRegistrationNumber,
           },
         };
       },
@@ -287,14 +290,43 @@ export const api = createApi({
       providesTags: ["fees", "course", "student-fees", "students"],
     }),
     getBalanceFees: build.query<
-      ApiResponse<StudentFeeData[]>,
-      { haveBalanceFees?: boolean; student?: string }
+      PaginatedApiResponse<StudentFeeData[]>,
+      { haveBalanceFees?: boolean; student?: string } & PaginatedRequest
     >({
       query: ({ haveBalanceFees = true, student = "" }) => ({
         url: `/fees?haveBalanceFees=${haveBalanceFees}&student=${student}`,
         method: "GET",
       }),
       providesTags: ["fees", "student-fees"],
+    }),
+    getStudentCount: build.query<
+      ApiResponse<number>,
+      { student: string; semester: string; subject: string }
+    >({
+      query: ({ student, semester, subject }) => ({
+        url: "/supply/total",
+        method: "GET",
+        params: {
+          student,
+          semester,
+          subject,
+        },
+      }),
+    }),
+    createStudentSupply: build.mutation<ApiResponse<void>, SupplyFees>({
+      query: (body) => ({
+        url: "/supply",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["supply"],
+    }),
+    getSupplyFees: build.query<ApiResponse<StudentFeeData[]>, void>({
+      query: () => ({
+        url: `/supply`,
+        method: "GET",
+      }),
+      providesTags: ["supply"],
     }),
   }),
 });
@@ -324,4 +356,7 @@ export const {
   useDashboardGraphQuery,
   useGetSemesterQuery,
   useGetBalanceFeesQuery,
+  useLazyGetStudentCountQuery,
+  useCreateStudentSupplyMutation,
+  useGetSupplyFeesQuery,
 } = api;

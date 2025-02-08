@@ -141,3 +141,15 @@ export type PaginatedRequest = {
   page?: number;
   limit?: number;
 };
+
+export type SupplyFees = {
+  student: string;
+  semester: string;
+  paidAmount: number;
+  subject: string;
+  remark?: string;
+  supplyNumber: number;
+  modeOfPayment: PaymentMode;
+  transactionId?: string;
+  payDate: string;
+};
