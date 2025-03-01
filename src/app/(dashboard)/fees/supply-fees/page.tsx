@@ -270,7 +270,7 @@ const Page = () => {
               <div>
                 <FormControl variant="standard" fullWidth>
                   <InputLabel id="semester" className="text-[12px]">
-                    Semester
+                    Semester/Year
                   </InputLabel>
                   <Select
                     value={semester}

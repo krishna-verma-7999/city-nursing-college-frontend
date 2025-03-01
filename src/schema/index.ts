@@ -30,7 +30,7 @@ export const courseSchema = yup.object({
 
 export const feeSchema = yup.object({
   courseId: yup.string().required("Course is required"),
-  semester: yup.string().required("semester is required"),
+  semester: yup.string().required("semester/year is required"),
   feesType: yup
     .array()
     .of(
@@ -142,7 +142,7 @@ export const studentFeesSchema = yup
     name: yup.string().required("Name is required"),
     fatherName: yup.string().required("Father Name is required"),
     course: yup.string().required("Course is required"),
-    semester: yup.string().required("Semester is required"),
+    semester: yup.string().required("Semester/year is required"),
     paidAmount: yup
       .number()
       .required("Fees Paid is required")
@@ -204,7 +204,7 @@ export const supplyFeesSchema = yup
     name: yup.string().required("Name is required"),
     fatherName: yup.string().required("Father Name is required"),
     course: yup.string().required("Course is required"),
-    semester: yup.string().required("Semester is required"),
+    semester: yup.string().required("Semester/Year is required"),
     subjectName: yup.string().required("Subject Name is required"),
     paidAmount: yup
       .number()

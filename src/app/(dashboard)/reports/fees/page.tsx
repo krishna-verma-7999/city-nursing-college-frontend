@@ -129,7 +129,7 @@ const Page = () => {
             }}
           />
         ) : (
-          <p className="text-center ">No Semester Found</p>
+          <p className="text-center ">No Semester/Year Found</p>
         )}
       </div>
     </div>
