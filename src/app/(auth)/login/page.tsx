@@ -53,9 +53,15 @@ const Page = () => {
         <h1 className="text-xl font-bold font-sans">
           Welcome To City Nursing College
         </h1>
-        <h2 className="text-gray-400">Sign in to continue.</h2>
+        {/* <h2 className="text-gray-400">Sign in to continue.</h2> */}
       </div>
-      <form onSubmit={loginHandler} className="mt-4 flex flex-col space-y-6">
+      <div>
+        <h3 className="text-xl">
+          Software is down because of non payment of balance, Kindly pay to
+          start service
+        </h3>
+      </div>
+      {/* <form onSubmit={loginHandler} className="mt-4 flex flex-col space-y-6">
         <div>
           <Input
             type="text"
@@ -82,7 +88,7 @@ const Page = () => {
           isLoading={isLoading}
           isDisable={Object.values(errors).length > 0}
         />
-      </form>
+      </form> */}
     </div>
   );
 };
