@@ -53,44 +53,42 @@ const Page = () => {
         <h1 className="text-xl font-bold font-sans">
           Welcome To City Nursing College
         </h1>
-        {/* <h2 className="text-gray-400">Sign in to continue.</h2> */}
+        <h2 className="text-gray-400">Sign in to continue.</h2>
       </div>
-      <div>
+      {/* <div>
         <h3 className="text-xl">
           Software is down because of non payment of balance, Kindly pay to
           start service
         </h3>
-      </div>
-      {false && (
-        <form onSubmit={loginHandler} className="mt-4 flex flex-col space-y-6">
-          <div>
-            <Input
-              type="text"
-              placeholder="Username"
-              register={register("userName")}
-              error={!!errors.userName}
-              message={errors.userName?.message}
-            />
-          </div>
-
-          <div>
-            <Input
-              type="password"
-              placeholder="Password"
-              register={register("password")}
-              error={!!errors.password}
-              message={errors.password?.message}
-            />
-          </div>
-
-          <Button
-            title="login"
-            loadingTitle="login..."
-            isLoading={isLoading}
-            isDisable={Object.values(errors).length > 0}
+      </div> */}
+      <form onSubmit={loginHandler} className="mt-4 flex flex-col space-y-6">
+        <div>
+          <Input
+            type="text"
+            placeholder="Username"
+            register={register("userName")}
+            error={!!errors.userName}
+            message={errors.userName?.message}
           />
-        </form>
-      )}
+        </div>
+
+        <div>
+          <Input
+            type="password"
+            placeholder="Password"
+            register={register("password")}
+            error={!!errors.password}
+            message={errors.password?.message}
+          />
+        </div>
+
+        <Button
+          title="login"
+          loadingTitle="login..."
+          isLoading={isLoading}
+          isDisable={Object.values(errors).length > 0}
+        />
+      </form>
     </div>
   );
 };
