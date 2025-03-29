@@ -98,14 +98,16 @@ const Page = () => {
       width: 150,
       renderCell: (params) => (
         <div>
-          {params.value} Semester{params.value > 1 && "s"}
+          {params.value} Year{params.value > 1 && "s"} / Semester
+          {params.value > 1 && "s"}
+          {params.value > 1 && "s"}
         </div>
       ),
     },
     {
       field: "semesters",
-      headerName: "Semesters",
-      width: 100,
+      headerName: "Years/ Semesters",
+      width: 150,
       renderCell: (params) => {
         const semesters: Semester[] = params.row?.semesters;
         return (
@@ -118,7 +120,7 @@ const Page = () => {
                   size="small"
                   onClick={(event) => handleMenuOpen(event, params.id)}
                 >
-                  Semesters
+                  Semesters / Years
                 </Button>
                 <Menu
                   anchorEl={anchorEl}

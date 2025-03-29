@@ -44,6 +44,7 @@ const handleGenerateInvoice = (rowData: any) => {
     modeOfPayment: rowData.modeOfPayment,
     paymentDate: new Date(rowData.payDate).toLocaleDateString(),
     semesterData,
+    remark: rowData.remark ?? "--",
   };
 
   const newDate = new Date().toLocaleDateString();
@@ -75,9 +76,9 @@ const handleGenerateInvoice = (rowData: any) => {
 const CustomToolbar = ({ data }: { data: any[] }) => {
   const handleExport = () => {
     const exportData = data.map((row) => {
-      const semesterFees = calculateSemFees(row.semester);
-      const categoryWiseFees = semesterFees[row.student.category];
-      const netFees = formatCurrency(categoryWiseFees - row.totalDiscount);
+      // const semesterFees = calculateSemFees(row.semester);
+      // const categoryWiseFees = semesterFees[row.student.category];
+      // const netFees = formatCurrency(categoryWiseFees - row.totalDiscount);
 
       return {
         ID: row.id,
@@ -85,10 +86,10 @@ const CustomToolbar = ({ data }: { data: any[] }) => {
         "Student Name": row.student?.name || "N/A",
         "Course Name": row.student?.course?.name || "N/A",
         "Semester / Year": row.semester?.semesterNumber || "N/A",
-        "Total Fees": categoryWiseFees || 0,
-        Discount: row.totalDiscount || 0,
-        "Net Fees": netFees || 0,
-        "Balance Fees": row.balanceFees || 0,
+        // "Total Fees": categoryWiseFees || 0,
+        // Discount: row.totalDiscount || 0,
+        // "Net Fees": netFees || 0,
+        // "Balance Fees": row.balanceFees || 0,
         "Paid Amount": row.paidAmount || 0,
         "Payment Date": row.payDate
           ? new Date(row.payDate).toLocaleDateString()
@@ -167,39 +168,39 @@ const columns: GridColDef[] = [
       return params.row.semester.semesterNumber;
     },
   },
-  {
-    field: "netFees",
-    headerName: "Total Fees",
-    width: 150,
-    renderCell: (params) => {
-      const totalFees = calculateSemFees(params.row.semester);
-      const categoryWiseFees = totalFees[params.row.student.category];
-      return formatCurrency(categoryWiseFees);
-    },
-  },
+  // {
+  //   field: "netFees",
+  //   headerName: "Total Fees",
+  //   width: 150,
+  //   renderCell: (params) => {
+  //     const totalFees = calculateSemFees(params.row.semester);
+  //     const categoryWiseFees = totalFees[params.row.student.category];
+  //     return formatCurrency(categoryWiseFees);
+  //   },
+  // },
 
-  {
-    field: "totalDiscount",
-    headerName: "Discount",
-    width: 150,
-    renderCell: (params) => formatCurrency(params.value),
-  },
-  {
-    field: "totalFees",
-    headerName: "Net Fees",
-    width: 150,
-    renderCell: (params) => {
-      const totalFees = calculateSemFees(params.row.semester);
-      const categoryWiseFees = totalFees[params.row.student.category];
-      return formatCurrency(categoryWiseFees - params.row.totalDiscount);
-    },
-  },
-  {
-    field: "balanceFees",
-    headerName: "Balance Fees",
-    width: 150,
-    renderCell: (params) => formatCurrency(params.value),
-  },
+  // {
+  //   field: "totalDiscount",
+  //   headerName: "Discount",
+  //   width: 150,
+  //   renderCell: (params) => formatCurrency(params.value),
+  // },
+  // {
+  //   field: "totalFees",
+  //   headerName: "Net Fees",
+  //   width: 150,
+  //   renderCell: (params) => {
+  //     const totalFees = calculateSemFees(params.row.semester);
+  //     const categoryWiseFees = totalFees[params.row.student.category];
+  //     return formatCurrency(categoryWiseFees - params.row.totalDiscount);
+  //   },
+  // },
+  // {
+  //   field: "balanceFees",
+  //   headerName: "Balance Fees",
+  //   width: 150,
+  //   renderCell: (params) => formatCurrency(params.value),
+  // },
   {
     field: "paidAmount",
     headerName: "Paid Amount",

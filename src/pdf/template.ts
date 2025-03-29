@@ -14,6 +14,7 @@ type FeesData = {
   paidAmount: string;
   balanceFees: string;
   modeOfPayment: string;
+  remark: string;
   transactionNumber: string;
   paymentDate: string; // Since it's formatted using toLocaleDateString()
   semesterData: {
@@ -149,8 +150,8 @@ export const generateInvoiceTemplate = (feesData: FeesData) => {
                         <span>${feesData.paidAmount}</span>
                     </p>
                     <p class="fees-details-item" style="gap:5px">
-                        <span>Discount: </span>
-                        <span>${feesData.discount}</span>
+                        <span>Remark: </span>
+                        <span>${feesData.remark ? feesData?.remark : "--"}</span>
                     </p>
                 </div>
             </div>
@@ -331,6 +332,10 @@ export const generateSupplyInvoiceTemplate = (feesData: FeesData) => {
                       <p class="fees-details-item" style="gap:5px">
                           <span>Course: </span>
                           <span>${feesData.courseName}</span>
+                      </p>
+                      <p class="fees-details-item" style="gap:5px">
+                        <span>Remark: </span>
+                        <span>${feesData.remark ? feesData?.remark : "--"}</span>
                       </p>
                   </div>
                   <div class="row-2">

@@ -293,9 +293,18 @@ export const api = createApi({
       PaginatedApiResponse<StudentFeeData[]>,
       { haveBalanceFees?: boolean; student?: string } & PaginatedRequest
     >({
-      query: ({ haveBalanceFees = true, student = "" }) => ({
+      query: ({
+        page = 1,
+        limit = 25,
+        haveBalanceFees = true,
+        student = "",
+      }) => ({
         url: `/fees?haveBalanceFees=${haveBalanceFees}&student=${student}`,
         method: "GET",
+        params: {
+          page,
+          limit,
+        },
       }),
       providesTags: ["fees", "student-fees"],
     }),
