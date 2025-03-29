@@ -44,6 +44,7 @@ const handleGenerateInvoice = (rowData: any) => {
     modeOfPayment: rowData.modeOfPayment,
     paymentDate: new Date(rowData.payDate).toLocaleDateString(),
     semesterData,
+    remark: rowData?.remark ?? "--",
   };
 
   const newDate = new Date().toLocaleDateString();
