@@ -138,7 +138,7 @@ const Page = () => {
                       onClick={handleMenuClose}
                       className="flex !justify-between"
                     >
-                      <span>{sem.semesterNumber} sem</span>
+                      <span>{sem.semesterNumber} year / sem</span>
                       <span className="flex gap-2">
                         <DeleteSemester id={sem._id} />
                         <FilePenLine
