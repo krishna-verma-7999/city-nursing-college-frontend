@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,6 +15,7 @@ import { redirect } from "next/navigation";
 import { calculateTotalFees, formatCurrency } from "@/utils";
 import { Button } from "@mui/material";
 import Papa from "papaparse";
+import { StudentData } from "@/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CustomToolbar = ({ data }: { data: any[] }) => {
@@ -163,16 +166,28 @@ const Page = () => {
     limit: paginationModel.pageSize,
     studentRegistrationNumber,
   });
+  const { data: allStudents } = useGetStudentsQuery({
+    page: -1,
+    limit: -1,
+    studentRegistrationNumber,
+  });
 
   useEffect(() => {
     refetch();
-  }, [paginationModel]);
+  }, [paginationModel, refetch]);
 
   const totalRowCount = students?.data.totalDocs;
   const studentsData = students?.data?.docs.map((row, index) => ({
     id: index + 1,
     ...row,
   }));
+  const studentsWithoutPagination = allStudents as any;
+  const allStudentData = studentsWithoutPagination?.data.map(
+    (row: StudentData, index: number) => ({
+      id: index + 1,
+      ...row,
+    })
+  );
 
   if (isLoading) {
     return (
@@ -240,7 +255,7 @@ const Page = () => {
             pageSizeOptions={[5, 10, 25, 50]}
             rowCount={totalRowCount}
             slots={{
-              toolbar: () => <CustomToolbar data={studentsData} />,
+              toolbar: () => <CustomToolbar data={allStudentData} />,
             }}
           />
         ) : (
